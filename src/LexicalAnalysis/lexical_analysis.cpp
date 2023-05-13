@@ -92,6 +92,33 @@ std::vector<Token*> LexicalAnalysis::run(void) {
             token->setValue(str);
         }
 
+        // Check for comment
+        else if (c == '/') {
+            c = this->nextChar();
+            if (c == '*') {
+                while (true) {
+                    c = this->nextChar();
+                    if (c == EOF) {
+                        this->runError("Reaching EOF before closing comment");
+                    }
+                    else if (c == '*') {
+                        c = this->nextChar();
+                        if (c == '/') {
+                            break;
+                        }
+                        this->unget();
+                    }
+                }
+                c = this->nextChar();
+                continue;
+            }
+            else {
+                this->unget();
+                this->unget();
+                c = this->nextChar();
+            }
+        }
+
         // Check for operators and punctuation
         else {
             // Check for operators
