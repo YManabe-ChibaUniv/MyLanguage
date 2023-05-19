@@ -3,6 +3,8 @@
 
 #include "token_enum.h"
 
+#include <string>
+
 class TokenType {
     protected:
         TokenKind kind;
@@ -11,5 +13,6 @@ class TokenType {
         TokenType(TokenKind kind, TokenDetail detail);
         TokenKind getTokenKind(void);
         TokenDetail getTokenDetail(void);
+        std::string __str(void);
 };
 #endif

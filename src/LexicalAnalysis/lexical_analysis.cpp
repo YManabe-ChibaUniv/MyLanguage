@@ -184,8 +184,7 @@ std::vector<Token*> LexicalAnalysis::run(void) {
         std::ofstream ofs(TOKEN_LIST_FILE);
         ofs << "token num: " << tokens.size() << std::endl;
         for (Token* token : tokens) {
-            TokenType* tt = token->getTokenType();
-            ofs << "[" << static_cast<int>(tt->getTokenKind()) << ", " << static_cast<int>(tt->getTokenDetail()) << "] " << token->getValue() << std::endl;
+            ofs << token->getTokenType()->__str() << " " << token->getValue() << std::endl;
         }
         ofs.close();
     #endif
