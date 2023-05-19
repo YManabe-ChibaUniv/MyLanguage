@@ -4,7 +4,7 @@ LDFLAGS   =
 NOMAKEDIR =
 OBJDIR    = obj
 GCC = g++
-CFLAGS = -g -O0 -MMD -MP -Wall -ljpeg -lm -std=c++14 -Wextra -Wpedantic -Werror
+CFLAGS = -std=c++17 -g -O0 -MMD -MP -Wall -ljpeg -lm -std=c++14 -Wextra -Wpedantic -Werror
 
 SRCS = $(shell find ./src/* -name *.cpp)
 DIRS = $(dir $(SRCS))

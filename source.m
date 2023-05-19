@@ -14,6 +14,6 @@ function main(void) -> void {
 	print(a, "+", b, "=");
 	println(a + b);
 	println(x + z);
-	println(y + string(c));
+	println(y, c);
 	return;
 }

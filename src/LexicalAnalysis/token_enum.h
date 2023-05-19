@@ -8,6 +8,7 @@ enum class TokenKind : int {
     TK_IDENT,       // Identifiers
     TK_NUM,         // Numeric literals
     TK_STRING,      // String literals
+    TK_PROGRAM,     // start program
     TK_EOF,         // End of input
 };
 
