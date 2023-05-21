@@ -1,71 +1,74 @@
 Syntax Tree
 PROGRAM
-    |-- FUNCTION_DEFINITION
-    |    |-- FUNCTION_NAME : main
-    |    |-- PARAM_LIST
-    |    |    |-- VAR_TYPE : void
-    |    |-- RETURN_TYPE : void
-    |    |-- BLOCK
-    |    |    |-- VAR_DEFINITION
-    |    |    |    |-- VAR_TYPE : int32
-    |    |    |    |-- VAR_NAME : a
-    |    |    |-- VAR_DEFINITION
-    |    |    |    |-- VAR_TYPE : int32
-    |    |    |    |-- VAR_NAME : b
-    |    |    |-- VAR_DEFINITION
-    |    |    |    |-- VAR_TYPE : int32
-    |    |    |    |-- VAR_NAME : c
-    |    |    |-- VAR_DEFINITION
-    |    |    |    |-- VAR_TYPE : string
-    |    |    |    |-- VAR_NAME : x
-    |    |    |-- VAR_DEFINITION
-    |    |    |    |-- VAR_TYPE : string
-    |    |    |    |-- VAR_NAME : y
-    |    |    |-- VAR_DEFINITION
-    |    |    |    |-- VAR_TYPE : string
-    |    |    |    |-- VAR_NAME : z
-    |    |    |-- ASSIGNMENT_EXPRESSION
-    |    |    |    |-- VAR_NAME : a
-    |    |    |    |-- INT_LITERAL : 32
-    |    |    |-- ASSIGNMENT_EXPRESSION
-    |    |    |    |-- VAR_NAME : b
-    |    |    |    |-- INT_LITERAL : 16
-    |    |    |-- ASSIGNMENT_EXPRESSION
-    |    |    |    |-- VAR_NAME : c
-    |    |    |    |-- VAR_NAME : b
-    |    |    |-- ASSIGNMENT_EXPRESSION
-    |    |    |    |-- VAR_NAME : x
-    |    |    |    |-- STRING_LITERAL : abc
-    |    |    |-- ASSIGNMENT_EXPRESSION
-    |    |    |    |-- VAR_NAME : y
-    |    |    |    |-- STRING_LITERAL : xyz
-    |    |    |-- ASSIGNMENT_EXPRESSION
-    |    |    |    |-- VAR_NAME : z
-    |    |    |    |-- VAR_NAME : x
-    |    |    |-- FUNCTION_CALL
-    |    |    |    |-- FUNCTION_NAME : print
-    |    |    |    |-- ARGUMENT_LIST
-    |    |    |    |    |-- VAR_NAME : a
-    |    |    |    |    |-- STRING_LITERAL : +
-    |    |    |    |    |-- VAR_NAME : b
-    |    |    |    |    |-- STRING_LITERAL : =
-    |    |    |-- FUNCTION_CALL
-    |    |    |    |-- FUNCTION_NAME : println
-    |    |    |    |-- ARGUMENT_LIST
-    |    |    |    |    |-- BINARY_EXPRESSION
-    |    |    |    |    |    |-- VAR_NAME : a
-    |    |    |    |    |    |-- OPERATOR : +
-    |    |    |    |    |    |-- VAR_NAME : b
-    |    |    |-- FUNCTION_CALL
-    |    |    |    |-- FUNCTION_NAME : println
-    |    |    |    |-- ARGUMENT_LIST
-    |    |    |    |    |-- BINARY_EXPRESSION
-    |    |    |    |    |    |-- VAR_NAME : x
-    |    |    |    |    |    |-- OPERATOR : +
-    |    |    |    |    |    |-- VAR_NAME : z
-    |    |    |-- FUNCTION_CALL
-    |    |    |    |-- FUNCTION_NAME : println
-    |    |    |    |-- ARGUMENT_LIST
-    |    |    |    |    |-- VAR_NAME : y
-    |    |    |    |    |-- VAR_NAME : c
-    |    |    |-- RETURN_STATEMENT
+ |-- FUNCTION_CALL
+ |    |-- FUNCTION_NAME : main
+ |    |-- ARGUMENT_LIST
+ |-- FUNCTION_DEFINITION
+ |    |-- FUNCTION_NAME : main
+ |    |-- PARAM_LIST
+ |    |    |-- VAR_TYPE : void
+ |    |-- RETURN_TYPE : void
+ |    |-- BLOCK
+ |    |    |-- VAR_DEFINITION
+ |    |    |    |-- VAR_TYPE : int32
+ |    |    |    |-- VAR_NAME : a
+ |    |    |-- VAR_DEFINITION
+ |    |    |    |-- VAR_TYPE : int32
+ |    |    |    |-- VAR_NAME : b
+ |    |    |-- VAR_DEFINITION
+ |    |    |    |-- VAR_TYPE : int32
+ |    |    |    |-- VAR_NAME : c
+ |    |    |-- VAR_DEFINITION
+ |    |    |    |-- VAR_TYPE : string
+ |    |    |    |-- VAR_NAME : x
+ |    |    |-- VAR_DEFINITION
+ |    |    |    |-- VAR_TYPE : string
+ |    |    |    |-- VAR_NAME : y
+ |    |    |-- VAR_DEFINITION
+ |    |    |    |-- VAR_TYPE : string
+ |    |    |    |-- VAR_NAME : z
+ |    |    |-- ASSIGNMENT_EXPRESSION
+ |    |    |    |-- VAR_NAME : a
+ |    |    |    |-- INT_LITERAL : 32
+ |    |    |-- ASSIGNMENT_EXPRESSION
+ |    |    |    |-- VAR_NAME : b
+ |    |    |    |-- INT_LITERAL : 16
+ |    |    |-- ASSIGNMENT_EXPRESSION
+ |    |    |    |-- VAR_NAME : c
+ |    |    |    |-- VAR_NAME : b
+ |    |    |-- ASSIGNMENT_EXPRESSION
+ |    |    |    |-- VAR_NAME : x
+ |    |    |    |-- STRING_LITERAL : abc
+ |    |    |-- ASSIGNMENT_EXPRESSION
+ |    |    |    |-- VAR_NAME : y
+ |    |    |    |-- STRING_LITERAL : xyz
+ |    |    |-- ASSIGNMENT_EXPRESSION
+ |    |    |    |-- VAR_NAME : z
+ |    |    |    |-- VAR_NAME : x
+ |    |    |-- FUNCTION_CALL
+ |    |    |    |-- FUNCTION_NAME : print
+ |    |    |    |-- ARGUMENT_LIST
+ |    |    |    |    |-- VAR_NAME : a
+ |    |    |    |    |-- STRING_LITERAL : +
+ |    |    |    |    |-- VAR_NAME : b
+ |    |    |    |    |-- STRING_LITERAL : =
+ |    |    |-- FUNCTION_CALL
+ |    |    |    |-- FUNCTION_NAME : println
+ |    |    |    |-- ARGUMENT_LIST
+ |    |    |    |    |-- BINARY_EXPRESSION
+ |    |    |    |    |    |-- VAR_NAME : a
+ |    |    |    |    |    |-- OPERATOR : +
+ |    |    |    |    |    |-- VAR_NAME : b
+ |    |    |-- FUNCTION_CALL
+ |    |    |    |-- FUNCTION_NAME : println
+ |    |    |    |-- ARGUMENT_LIST
+ |    |    |    |    |-- BINARY_EXPRESSION
+ |    |    |    |    |    |-- VAR_NAME : x
+ |    |    |    |    |    |-- OPERATOR : +
+ |    |    |    |    |    |-- VAR_NAME : z
+ |    |    |-- FUNCTION_CALL
+ |    |    |    |-- FUNCTION_NAME : println
+ |    |    |    |-- ARGUMENT_LIST
+ |    |    |    |    |-- VAR_NAME : y
+ |    |    |    |    |-- VAR_NAME : c
+ |    |    |-- RETURN_STATEMENT

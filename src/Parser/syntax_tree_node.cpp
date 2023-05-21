@@ -39,72 +39,19 @@ void SyntaxTreeNode::setParent(SyntaxTreeNode* parent) {
 
 void SyntaxTreeNode::printTree(int depth) {
     for (int i = 0; i < depth; i++) {
-        std::cout << "    |";
+        if (i == 0) {
+            std::cout << " |";
+        }
+        else {
+            std::cout << "    |";
+        }
     }
 
     if (depth > 0) {
         std::cout << "-- ";
     }
 
-    switch (this->type) {
-        case ASTNodeType::PROGRAM:
-            std::cout << "PROGRAM";
-            break;
-        case ASTNodeType::FUNCTION_DEFINITION:
-            std::cout << "FUNCTION_DEFINITION";
-            break;
-        case ASTNodeType::FUNCTION_NAME:
-            std::cout << "FUNCTION_NAME";
-            break;
-        case ASTNodeType::PARAM_LIST:
-            std::cout << "PARAM_LIST";
-            break;
-        case ASTNodeType::BLOCK:
-            std::cout << "BLOCK";
-            break;
-        case ASTNodeType::VAR_DEFINITION:
-            std::cout << "VAR_DEFINITION";
-            break;
-        case ASTNodeType::VAR_TYPE:
-            std::cout << "VAR_TYPE";
-            break;
-        case ASTNodeType::VAR_NAME:
-            std::cout << "VAR_NAME";
-            break;
-        case ASTNodeType::ASSIGNMENT_EXPRESSION:
-            std::cout << "ASSIGNMENT_EXPRESSION";
-            break;
-        case ASTNodeType::INT_LITERAL:
-            std::cout << "INT_LITERAL";
-            break;
-        case ASTNodeType::STRING_LITERAL:
-            std::cout << "STRING_LITERAL";
-            break;
-        case ASTNodeType::FUNCTION_CALL:
-            std::cout << "FUNCTION_CALL";
-            break;
-        case ASTNodeType::ARGUMENT_LIST:
-            std::cout << "ARGUMENT_LIST";
-            break;
-        case ASTNodeType::BINARY_EXPRESSION:
-            std::cout << "BINARY_EXPRESSION";
-            break;
-        case ASTNodeType::OPERATOR:
-            std::cout << "OPERATOR";
-            break;
-        case ASTNodeType::RETURN_STATEMENT:
-            std::cout << "RETURN_STATEMENT";
-            break;
-        case ASTNodeType::RETURN_LIST:
-            std::cout << "RETURN_LIST";
-            break;
-        case ASTNodeType::RETURN_TYPE:
-            std::cout << "RETURN_TYPE";
-            break;
-        default:
-            std::cout << "UNKNOWN";
-            break;
-    }
+    std::cout << this->__str();
 
     if (this->token != NULL) {
         std::cout << " : " << this->token->getValue() << std::endl;
@@ -118,4 +65,64 @@ void SyntaxTreeNode::printTree(int depth) {
     }
 
     return;
+}
+
+std::string SyntaxTreeNode::__str(void) {
+    switch (this->type) {
+        case ASTNodeType::PROGRAM:
+            return "PROGRAM";
+            break;
+        case ASTNodeType::FUNCTION_DEFINITION:
+            return "FUNCTION_DEFINITION";
+            break;
+        case ASTNodeType::FUNCTION_NAME:
+            return "FUNCTION_NAME";
+            break;
+        case ASTNodeType::PARAM_LIST:
+            return "PARAM_LIST";
+            break;
+        case ASTNodeType::BLOCK:
+            return "BLOCK";
+            break;
+        case ASTNodeType::VAR_DEFINITION:
+            return "VAR_DEFINITION";
+            break;
+        case ASTNodeType::VAR_TYPE:
+            return "VAR_TYPE";
+            break;
+        case ASTNodeType::VAR_NAME:
+            return "VAR_NAME";
+            break;
+        case ASTNodeType::ASSIGNMENT_EXPRESSION:
+            return "ASSIGNMENT_EXPRESSION";
+            break;
+        case ASTNodeType::INT_LITERAL:
+            return "INT_LITERAL";
+            break;
+        case ASTNodeType::STRING_LITERAL:
+            return "STRING_LITERAL";
+            break;
+        case ASTNodeType::FUNCTION_CALL:
+            return "FUNCTION_CALL";
+            break;
+        case ASTNodeType::ARGUMENT_LIST:
+            return "ARGUMENT_LIST";
+            break;
+        case ASTNodeType::BINARY_EXPRESSION:
+            return "BINARY_EXPRESSION";
+            break;
+        case ASTNodeType::OPERATOR:
+            return "OPERATOR";
+            break;
+        case ASTNodeType::RETURN_STATEMENT:
+            return "RETURN_STATEMENT";
+            break;
+        case ASTNodeType::RETURN_LIST:
+            return "RETURN_LIST";
+            break;
+        case ASTNodeType::RETURN_TYPE:
+            return "RETURN_TYPE";
+            break;
+    }
+    return "UNKNOWN";
 }
