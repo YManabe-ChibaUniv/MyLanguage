@@ -23,6 +23,7 @@ class SyntaxTreeNode {
         ASTNodeType getType();
         void setParent(SyntaxTreeNode* parent);
         void printTree(int depth);
+        std::string __str(void);
 };
 
 #endif

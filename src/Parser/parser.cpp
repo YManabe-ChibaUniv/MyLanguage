@@ -6,7 +6,7 @@ Parser::Parser(std::vector<Token*> tokens) {
 }
 
 Parser::~Parser() {
-    delete this->tree;
+
 }
 
 SyntaxTree* Parser::getTree(void) {
@@ -35,12 +35,23 @@ void Parser::run(void) {
 
 SyntaxTreeNode* Parser::parseProgram(void) {
     SyntaxTreeNode* node = new SyntaxTreeNode(NULL, ASTNodeType::PROGRAM);
+
+    // call main
+    SyntaxTreeNode* callMainNode = new SyntaxTreeNode(NULL, ASTNodeType::FUNCTION_CALL);
+    Token* callMain = new Token();
+    callMain->setTokenType(new TokenType(TokenKind::TK_IDENT, TokenDetail::NOTHING));
+    callMain->setValue("main");
+    callMainNode->addChild(new SyntaxTreeNode(callMain, ASTNodeType::FUNCTION_NAME));
+    callMainNode->addChild(new SyntaxTreeNode(NULL, ASTNodeType::ARGUMENT_LIST));
+    node->addChild(callMainNode);
+
     while (this->index < (int)this->tokens.size()) {
         std::vector<SyntaxTreeNode*> nodes = this->parseStatement();
         for (SyntaxTreeNode* _node : nodes) {
             node->addChild(_node);
         }
     }
+
     return node;
 }
 
