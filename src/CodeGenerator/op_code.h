@@ -11,12 +11,14 @@ enum class OpCode : uint8_t {
     STORE_INT,
     STORE_STRING,
     ADD,
+    SUB,
     MINUS,
     PRINT,
     PRINTLN,
     RETURN,
     JUMP,
     HALT,
+    LABEL,
 };
 
 #endif

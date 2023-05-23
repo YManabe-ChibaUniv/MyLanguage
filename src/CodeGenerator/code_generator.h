@@ -13,11 +13,12 @@
 
 class CodeGenerator {
     public:
-        CodeGenerator(SyntaxTree* root, std::string outputFileName);
+        CodeGenerator(SyntaxTree* root, std::string outputDumpFileName, std::string outputRuntimeFileName);
         ~CodeGenerator();
         void run(void);
     private:
-        std::ofstream outputFile;
+        std::ofstream outputDumpFile;
+        std::ofstream outputRuntimeFile;
         std::vector<Instruction*> instructions;
         SyntaxTree* root;
         VarTable* varTable;

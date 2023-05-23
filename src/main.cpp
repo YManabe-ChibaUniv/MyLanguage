@@ -1,7 +1,8 @@
 #include "debug.h"
 
 #define INPUT_SOURCE_FILE "source.m"
-#define OUTPUT_RUNTIME_FILE "dump/code.txt"
+#define OUTPUT_DUMP_FILE "dump/code.txt"
+#define OUTPUT_RUNTIME_FILE "dump/runtime"
 
 #include "LexicalAnalysis/lexical_analysis.h"
 #include "Parser/parser.h"
@@ -47,7 +48,7 @@ int main() {
     // CodeGeneration
     try {
         std::cout << "CodeGeneration start" << std::endl;
-        CodeGenerator* cg = new CodeGenerator(root, OUTPUT_RUNTIME_FILE);
+        CodeGenerator* cg = new CodeGenerator(root, OUTPUT_DUMP_FILE, OUTPUT_RUNTIME_FILE);
         cg->run();
         delete cg;
         std::cout << "CodeGeneration end" << std::endl;
