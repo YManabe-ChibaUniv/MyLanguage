@@ -3,7 +3,7 @@
 CodeGenerator::CodeGenerator(SyntaxTree* root, std::string outputDumpFileName, std::string outputRuntimeFileName) {
     this->root = root;
     this->outputDumpFile.open(outputDumpFileName);
-    this->outputRuntimeFile.open(outputRuntimeFileName, std::ios::out | std::ios::trunc | std::ios::binary);
+    this->outputRuntimeFile.open(outputRuntimeFileName, std::ios::binary);
     this->varTable = new VarTable();
     this->functionTable = new FunctionTable();
 }
@@ -29,6 +29,7 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
     std::vector<SyntaxTreeNode*> childNodes;
     TokenDetail td;
     int varAddress;
+    int funcAddress;
 
     switch (node->getType()) {
         case ASTNodeType::PROGRAM:
@@ -42,9 +43,11 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
             itr = childNodes.begin();
             // FUNCTION_NAME
             tmpNode = *itr;
-            this->functionTable->add(tmpNode->getToken()->getValue(), this->outputRuntimeFile.tellp());
-            this->outputDumpFile << "LABEL " << this->functionTable->getAddress(tmpNode->getToken()->getValue()) << std::endl;
-            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::LABEL) << this->functionTable->getAddress(tmpNode->getToken()->getValue());
+            this->functionTable->add(tmpNode->getToken()->getValue(), (int) this->outputRuntimeFile.tellp());
+            funcAddress = this->functionTable->getIndex(tmpNode->getToken()->getValue());
+            this->outputDumpFile << "LABEL " << funcAddress << std::endl;
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::LABEL);
+            this->writeIntData(funcAddress);
             // 関数ラベルのアドレスを記録
             itr++;
             // PARAMETER_LIST
@@ -94,15 +97,20 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
                 case TokenKind::TK_NUM:
                     this->outputDumpFile << "PUSH_INT " << tmpNode->getToken()->getValue() << std::endl;
                     this->outputDumpFile << "STORE_INT " << varAddress << std::endl;
-                    this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_INT) << stoi(tmpNode->getToken()->getValue());
-                    this->outputRuntimeFile << static_cast<uint8_t>(OpCode::STORE_INT) << varAddress;
+                    this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_INT);
+                    this->writeIntData(stoi(tmpNode->getToken()->getValue()));
+                    this->outputRuntimeFile << static_cast<uint8_t>(OpCode::STORE_INT);
+                    this->writeIntData(varAddress);
                     break;
                 // STRING_LITERAL
                 case TokenKind::TK_STRING:
-                    this->outputDumpFile << "PUSH_STRING " << tmpNode->getToken()->getValue().length() << " " << tmpNode->getToken()->getValue() << std::endl;
+                    this->outputDumpFile << "PUSH_STRING " << (int) tmpNode->getToken()->getValue().length() << " " << tmpNode->getToken()->getValue() << std::endl;
                     this->outputDumpFile << "STORE_STRING " << varAddress << std::endl;
-                    this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_INT) << tmpNode->getToken()->getValue().length() << tmpNode->getToken()->getValue();
-                    this->outputRuntimeFile << static_cast<uint8_t>(OpCode::STORE_INT) << varAddress;
+                    this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_STRING);
+                    this->writeIntData(tmpNode->getToken()->getValue().length());
+                    this->outputRuntimeFile << tmpNode->getToken()->getValue();
+                    this->outputRuntimeFile << static_cast<uint8_t>(OpCode::STORE_STRING);
+                    this->writeIntData(varAddress);
                     break;
                 // VAR_NAME
                 case TokenKind::TK_IDENT:
@@ -110,14 +118,18 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
                         case TokenDetail::DEF_INT32:
                             this->outputDumpFile << "LOAD_INT " << this->varTable->getAddress(tmpNode->getToken()->getValue()) << std::endl;
                             this->outputDumpFile << "STORE_INT " << varAddress << std::endl;
-                            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::LOAD_INT) << this->varTable->getAddress(tmpNode->getToken()->getValue());
-                            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::STORE_INT) << varAddress;
+                            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::LOAD_INT);
+                            this->writeIntData(this->varTable->getAddress(tmpNode->getToken()->getValue()));
+                            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::STORE_INT);
+                            this->writeIntData(varAddress);
                             break;
                         case TokenDetail::DEF_STRING:
                             this->outputDumpFile << "LOAD_STRING " << this->varTable->getAddress(tmpNode->getToken()->getValue()) << std::endl;
                             this->outputDumpFile << "STORE_STRING " << varAddress << std::endl;
-                            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::LOAD_STRING) << this->varTable->getAddress(tmpNode->getToken()->getValue());
-                            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::STORE_STRING) << varAddress;
+                            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::LOAD_STRING);
+                            this->writeIntData(this->varTable->getAddress(tmpNode->getToken()->getValue()));
+                            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::STORE_STRING);
+                            this->writeIntData(varAddress);
                             break;
                         default:
                             break;
@@ -144,11 +156,16 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
                 this->printInstructions(tmpNode->getChildren());
                 this->outputDumpFile << "PUSH_STRING " << 1 << " \\n" << std::endl;
                 this->outputDumpFile << "PRINT" << std::endl;
-                this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_STRING) << (size_t) 1 << "\n";
+                this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_STRING);
+                this->writeIntData(1);
+                this->outputRuntimeFile << "\n";
+                this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PRINT);
             }
             else {
-                this->outputDumpFile << "JUMP " << this->functionTable->getAddress(tmpNode->getToken()->getValue()) << std::endl;
-                this->outputRuntimeFile << static_cast<uint8_t>(OpCode::JUMP) << this->functionTable->getAddress(tmpNode->getToken()->getValue());
+                funcAddress = this->functionTable->getAddress(tmpNode->getToken()->getValue());
+                this->outputDumpFile << "JUMP " << funcAddress << std::endl;
+                this->outputRuntimeFile << static_cast<uint8_t>(OpCode::JUMP);
+                this->writeIntData(funcAddress);
                 if (tmpNode->getToken()->getValue() == "main") {
                     this->outputDumpFile << "HALT" << std::endl;
                     this->outputRuntimeFile << static_cast<uint8_t>(OpCode::HALT);
@@ -204,23 +221,28 @@ void CodeGenerator::printInstructions(std::vector<SyntaxTreeNode*> nodes) {
             // INT_LITERAL
             case TokenKind::TK_NUM:
                 this->outputDumpFile << "PUSH_INT " << node->getToken()->getValue() << std::endl;
-                this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_INT) << node->getToken()->getValue();
+                this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_INT);
+                this->writeIntData(stoi(node->getToken()->getValue()));
                 break;
             // STRING_LITERAL
             case TokenKind::TK_STRING:
-                this->outputDumpFile << "PUSH_STRING " << node->getToken()->getValue().length() << " " << node->getToken()->getValue() << std::endl;
-                this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_STRING) << node->getToken()->getValue().length() << node->getToken()->getValue();
+                this->outputDumpFile << "PUSH_STRING " << (int) node->getToken()->getValue().length() << " " << node->getToken()->getValue() << std::endl;
+                this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_STRING);
+                this->writeIntData((int) node->getToken()->getValue().length());
+                this->outputRuntimeFile << node->getToken()->getValue();
                 break;
             // VAR_NAME
             case TokenKind::TK_IDENT:
                 switch (this->varTable->getType(this->varTable->getAddress(node->getToken()->getValue()))) {
                     case TokenDetail::DEF_INT32:
                         this->outputDumpFile << "LOAD_INT " << this->varTable->getAddress(node->getToken()->getValue()) << std::endl;
-                        this->outputRuntimeFile << static_cast<uint8_t>(OpCode::LOAD_INT) << this->varTable->getAddress(node->getToken()->getValue());
+                        this->outputRuntimeFile << static_cast<uint8_t>(OpCode::LOAD_INT);
+                        this->writeIntData(this->varTable->getAddress(node->getToken()->getValue()));
                         break;
                     case TokenDetail::DEF_STRING:
                         this->outputDumpFile << "LOAD_STRING " << this->varTable->getAddress(node->getToken()->getValue()) << std::endl;
-                        this->outputRuntimeFile << static_cast<uint8_t>(OpCode::LOAD_STRING) << this->varTable->getAddress(node->getToken()->getValue());
+                        this->outputRuntimeFile << static_cast<uint8_t>(OpCode::LOAD_STRING);
+                        this->writeIntData(this->varTable->getAddress(node->getToken()->getValue()));
                         break;
                     default:
                         break;
@@ -239,21 +261,26 @@ void CodeGenerator::storeValue(SyntaxTreeNode* node) {
     switch (node->getToken()->getTokenType()->getTokenKind()) {
         case TokenKind::TK_NUM:
             this->outputDumpFile << "PUSH_INT " << node->getToken()->getValue() << std::endl;
-            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_INT) << node->getToken()->getValue();
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_INT);
+            this->writeIntData(stoi(node->getToken()->getValue()));
             break;
         case TokenKind::TK_STRING:
-            this->outputDumpFile << "PUSH_STRING " << node->getToken()->getValue().length() << " " << node->getToken()->getValue() << std::endl;
-            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_STRING) << node->getToken()->getValue().length() << node->getToken()->getValue();
+            this->outputDumpFile << "PUSH_STRING " << (int) node->getToken()->getValue().length() << " " << node->getToken()->getValue() << std::endl;
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_STRING);
+            this->writeIntData(node->getToken()->getValue().length());
+            this->outputRuntimeFile << node->getToken()->getValue();
             break;
         case TokenKind::TK_IDENT:
             switch (this->varTable->getType(this->varTable->getAddress(node->getToken()->getValue()))) {
                 case TokenDetail::DEF_INT32:
                     this->outputDumpFile << "LOAD_INT " << this->varTable->getAddress(node->getToken()->getValue()) << std::endl;
-                    this->outputRuntimeFile << static_cast<uint8_t>(OpCode::LOAD_INT) << this->varTable->getAddress(node->getToken()->getValue());
+                    this->outputRuntimeFile << static_cast<uint8_t>(OpCode::LOAD_INT);
+                    this->writeIntData(this->varTable->getAddress(node->getToken()->getValue()));
                     break;
                 case TokenDetail::DEF_STRING:
                     this->outputDumpFile << "LOAD_STRING " << this->varTable->getAddress(node->getToken()->getValue()) << std::endl;
-                    this->outputRuntimeFile << static_cast<uint8_t>(OpCode::LOAD_STRING) << this->varTable->getAddress(node->getToken()->getValue());
+                    this->outputRuntimeFile << static_cast<uint8_t>(OpCode::LOAD_STRING);
+                    this->writeIntData(this->varTable->getAddress(node->getToken()->getValue()));
                     break;
                 default:
                     break;
@@ -261,6 +288,17 @@ void CodeGenerator::storeValue(SyntaxTreeNode* node) {
             break;
         default:
             break;
+    }
+
+    return;
+}
+
+void CodeGenerator::writeIntData(int value) {
+    uint8_t byte;
+
+    for (long unsigned int i = 0; i < sizeof(int); i++) {
+        byte = static_cast<uint8_t>(value >> (i * 8));
+        this->outputRuntimeFile.write(reinterpret_cast<const char*>(&byte), sizeof(byte));
     }
 
     return;

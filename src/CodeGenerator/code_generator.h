@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <fstream>
+#include <cstdint>
 
 class CodeGenerator {
     public:
@@ -26,6 +27,7 @@ class CodeGenerator {
         void codeGen(SyntaxTreeNode* node);
         void printInstructions(std::vector<SyntaxTreeNode*> nodes);
         void storeValue(SyntaxTreeNode* node);
+        void writeIntData(int value);
 };
 
 #endif

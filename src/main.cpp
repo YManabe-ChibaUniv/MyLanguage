@@ -10,6 +10,7 @@
 #include "CodeGenerator/code_generator.h"
 #include "Error/error.h"
 #include "LexicalAnalysis/token.h"
+#include "RunTime/run_time.h"
 
 #include <iostream>
 #include <fstream>
@@ -55,6 +56,18 @@ int main() {
     }
     catch (...) {
         error("Exception: CodeGeneration");
+    }
+
+    // RunTime
+    try {
+        std::cout << "RunTime start" << std::endl;
+        RunTime* rt = new RunTime(OUTPUT_RUNTIME_FILE);
+        rt->run();
+        delete rt;
+        std::cout << "RunTime end" << std::endl;
+    }
+    catch (...) {
+        error("Exception: RunTime");
     }
 
     for (Token* t : tokens) {
