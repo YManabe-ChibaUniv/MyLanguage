@@ -10,9 +10,10 @@ class FunctionTable {
         FunctionTable();
         ~FunctionTable();
 
-        void add(std::string name, long address);
+        void add(std::string name, int address);
         std::string getName(int index);
-        long getAddress(std::string name);
+        int getAddress(std::string name);
+        int getIndex(std::string name);
         void printTable(void);
     private:
         std::vector<std::pair<std::string, int>> names;

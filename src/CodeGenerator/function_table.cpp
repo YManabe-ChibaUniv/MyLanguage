@@ -8,18 +8,29 @@ FunctionTable::~FunctionTable() {
     this->names.clear();
 }
 
-void FunctionTable::add(std::string name, long address) {
+void FunctionTable::add(std::string name, int address) {
     this->names.push_back(std::make_pair(name, address));
+
+    return;
 }
 
 std::string FunctionTable::getName(int index) {
     return this->names[index].first;
 }
 
-long FunctionTable::getAddress(std::string name) {
+int FunctionTable::getAddress(std::string name) {
     for (int i = 0; i < (int) this->names.size(); i++) {
         if (this->names[i].first == name) {
             return this->names[i].second;
+        }
+    }
+    return -1;
+}
+
+int FunctionTable::getIndex(std::string name) {
+    for (int i = 0; i < (int) this->names.size(); i++) {
+        if (this->names[i].first == name) {
+            return i;
         }
     }
     return -1;
