@@ -17,6 +17,7 @@ enum class OpCode : uint8_t {
     JUMP,
     HALT,
     LABEL,
+    CALL,
 };
 
 #endif

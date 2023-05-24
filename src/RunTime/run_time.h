@@ -23,9 +23,11 @@ class RunTime {
         std::ofstream runtime_log_file;
         std::vector<char> runtime;
         std::vector<char>::iterator runtime_iterator;
+        std::vector<char>::iterator runtime_begin;
         std::vector<char>::iterator runtime_end;
         std::stack<Var*> stack;
         std::map<int, Var*> vars;
+        std::stack<int> call_stack;
         int readIntValueByIterator(void);
         std::string readStringValueByIterator(int size);
         void logStackAndMap(void);

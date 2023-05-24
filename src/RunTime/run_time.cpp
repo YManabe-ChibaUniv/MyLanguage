@@ -20,6 +20,7 @@ RunTime::RunTime(std::string runtime_file_name, std::string runtime_log_file_nam
     this->runtime.resize(runtime_file_size);
     this->runtime_file.read(this->runtime.data(), runtime_file_size);
     this->runtime_iterator = this->runtime.begin();
+    this->runtime_begin = this->runtime.begin();
     this->runtime_end = this->runtime.end();
 }
 
@@ -29,6 +30,7 @@ RunTime::~RunTime() {
 
     this->stack.empty();
     this->vars.clear();
+    this->call_stack.empty();
 }
 
 void RunTime::run(void) {
@@ -151,6 +153,9 @@ void RunTime::run(void) {
                 #endif
                 break;
             case OpCode::RETURN:
+                // back to call function address
+                this->runtime_iterator = this->runtime_begin + this->call_stack.top();
+                this->call_stack.pop();
                 #if DEBUG
                     this->runtime_log_file << "RETURN" << std::endl;
                     this->logStackAndMap();
@@ -159,6 +164,7 @@ void RunTime::run(void) {
             case OpCode::JUMP:
                 // function address
                 function_address = this->readIntValueByIterator();
+                this->runtime_iterator = this->runtime_begin + function_address;
                 #if DEBUG
                     this->runtime_log_file << "JUMP: " << function_address << std::endl;
                     this->logStackAndMap();
@@ -169,7 +175,7 @@ void RunTime::run(void) {
                     this->runtime_log_file << "HALT" << std::endl;
                     this->logStackAndMap();
                 #endif
-                // return;
+                return;
                 break;
             case OpCode::LABEL:
                 // function address
@@ -182,6 +188,17 @@ void RunTime::run(void) {
                 #else
                     var_address = function_address;
                 #endif
+                break;
+            case OpCode::CALL:
+                function_address = this->readIntValueByIterator();
+                this->call_stack.push(std::distance(this->runtime_begin, this->runtime_iterator));
+                this->runtime_iterator = this->runtime_begin + function_address;
+
+                #if DEBUG
+                    this->runtime_log_file << "CALL: " << function_address << std::endl;
+                    this->logStackAndMap();
+                #endif
+
                 break;
         }
     }
@@ -224,6 +241,15 @@ void RunTime::logStackAndMap(void) {
     this->runtime_log_file << "Map:" << std::endl;
     for (auto& var : this->vars) {
         this->runtime_log_file << var.first << ": " << var.second->__str() << std::endl;
+    }
+    this->runtime_log_file << std::endl;
+
+    this->runtime_log_file << "Call stack:" << std::endl;
+    std::stack<int> call_stack_copy = this->call_stack;
+    i = 0;
+    while (!call_stack_copy.empty()) {
+        this->runtime_log_file << i++ << ": " << call_stack_copy.top() << std::endl;
+        call_stack_copy.pop();
     }
     this->runtime_log_file << std::endl;
 

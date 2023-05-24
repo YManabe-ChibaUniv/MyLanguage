@@ -24,6 +24,8 @@ class CodeGenerator {
         SyntaxTree* root;
         VarTable* varTable;
         FunctionTable* functionTable;
+        std::streampos mainFunctionAddress;
+        std::streampos mainCallAddress;
         void codeGen(SyntaxTreeNode* node);
         void printInstructions(std::vector<SyntaxTreeNode*> nodes);
         void storeValue(SyntaxTreeNode* node);
