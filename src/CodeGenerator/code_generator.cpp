@@ -21,6 +21,8 @@ CodeGenerator::~CodeGenerator() {
 
 void CodeGenerator::run(void) {
     this->codeGen(this->root->getRoot());
+    this->outputRuntimeFile.seekp(this->mainCallAddress);
+    this->writeIntData((int) this->mainFunctionAddress);
 }
 
 void CodeGenerator::codeGen(SyntaxTreeNode* node) {
@@ -48,6 +50,7 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
             this->outputDumpFile << "LABEL " << funcAddress << std::endl;
             this->outputRuntimeFile << static_cast<uint8_t>(OpCode::LABEL);
             this->writeIntData(funcAddress);
+            this->mainFunctionAddress = this->outputRuntimeFile.tellp();
             // 関数ラベルのアドレスを記録
             itr++;
             // PARAMETER_LIST
@@ -163,8 +166,9 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
             }
             else {
                 funcAddress = this->functionTable->getAddress(tmpNode->getToken()->getValue());
-                this->outputDumpFile << "JUMP " << funcAddress << std::endl;
-                this->outputRuntimeFile << static_cast<uint8_t>(OpCode::JUMP);
+                this->outputDumpFile << "CALL " << funcAddress << std::endl;
+                this->outputRuntimeFile << static_cast<uint8_t>(OpCode::CALL);
+                this->mainCallAddress = this->outputRuntimeFile.tellp();
                 this->writeIntData(funcAddress);
                 if (tmpNode->getToken()->getValue() == "main") {
                     this->outputDumpFile << "HALT" << std::endl;
