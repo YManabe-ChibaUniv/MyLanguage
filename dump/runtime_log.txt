@@ -1,0 +1,742 @@
+CALL: 11
+"""
+Stack:
+
+Map:
+
+Call stack:
+0: 5
+"""
+PUSH_INT: 32
+"""
+Stack:
+0: 32
+
+Map:
+
+Call stack:
+0: 5
+"""
+STORE_INT: 0
+"""
+Stack:
+
+Map:
+0: 32
+
+Call stack:
+0: 5
+"""
+PUSH_INT: 16
+"""
+Stack:
+0: 16
+
+Map:
+0: 32
+
+Call stack:
+0: 5
+"""
+STORE_INT: 1
+"""
+Stack:
+
+Map:
+0: 32
+1: 16
+
+Call stack:
+0: 5
+"""
+LOAD_INT: 1
+"""
+Stack:
+0: 16
+
+Map:
+0: 32
+1: 16
+
+Call stack:
+0: 5
+"""
+STORE_INT: 2
+"""
+Stack:
+
+Map:
+0: 32
+1: 16
+2: 16
+
+Call stack:
+0: 5
+"""
+LOAD_INT: 0
+"""
+Stack:
+0: 32
+
+Map:
+0: 32
+1: 16
+2: 16
+
+Call stack:
+0: 5
+"""
+LOAD_INT: 1
+"""
+Stack:
+0: 16
+1: 32
+
+Map:
+0: 32
+1: 16
+2: 16
+
+Call stack:
+0: 5
+"""
+LOAD_INT: 2
+"""
+Stack:
+0: 16
+1: 16
+2: 32
+
+Map:
+0: 32
+1: 16
+2: 16
+
+Call stack:
+0: 5
+"""
+LOAD_INT: 0
+"""
+Stack:
+0: 32
+1: 16
+2: 16
+3: 32
+
+Map:
+0: 32
+1: 16
+2: 16
+
+Call stack:
+0: 5
+"""
+SUB: -16
+"""
+Stack:
+0: -16
+1: 16
+2: 32
+
+Map:
+0: 32
+1: 16
+2: 16
+
+Call stack:
+0: 5
+"""
+int32 + int32
+ADD: 0
+"""
+Stack:
+0: 0
+1: 32
+
+Map:
+0: 32
+1: 16
+2: 16
+
+Call stack:
+0: 5
+"""
+MUL: 0
+"""
+Stack:
+0: 0
+
+Map:
+0: 32
+1: 16
+2: 16
+
+Call stack:
+0: 5
+"""
+LOAD_INT: 1
+"""
+Stack:
+0: 16
+1: 0
+
+Map:
+0: 32
+1: 16
+2: 16
+
+Call stack:
+0: 5
+"""
+SUB: -16
+"""
+Stack:
+0: -16
+
+Map:
+0: 32
+1: 16
+2: 16
+
+Call stack:
+0: 5
+"""
+STORE_INT: 0
+"""
+Stack:
+
+Map:
+0: -16
+1: 16
+2: 16
+
+Call stack:
+0: 5
+"""
+PUSH_STRING: abc
+"""
+Stack:
+0: abc
+
+Map:
+0: -16
+1: 16
+2: 16
+
+Call stack:
+0: 5
+"""
+STORE_STRING: 3
+"""
+Stack:
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+
+Call stack:
+0: 5
+"""
+PUSH_STRING: xyz
+"""
+Stack:
+0: xyz
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+
+Call stack:
+0: 5
+"""
+STORE_STRING: 4
+"""
+Stack:
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+
+Call stack:
+0: 5
+"""
+LOAD_STRING: 3
+"""
+Stack:
+0: abc
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+
+Call stack:
+0: 5
+"""
+STORE_STRING: 5
+"""
+Stack:
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+LOAD_INT: 0
+"""
+Stack:
+0: -16
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+PRINT
+"""
+Stack:
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+PUSH_STRING: +
+"""
+Stack:
+0: +
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+PRINT
+"""
+Stack:
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+LOAD_INT: 1
+"""
+Stack:
+0: 16
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+PRINT
+"""
+Stack:
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+PUSH_STRING: =
+"""
+Stack:
+0: =
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+PRINT
+"""
+Stack:
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+LOAD_INT: 0
+"""
+Stack:
+0: -16
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+LOAD_INT: 1
+"""
+Stack:
+0: 16
+1: -16
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+int32 + int32
+ADD: 0
+"""
+Stack:
+0: 0
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+PRINT
+"""
+Stack:
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+PUSH_STRING: 
+
+"""
+Stack:
+0: 
+
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+PRINT
+"""
+Stack:
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+LOAD_STRING: 3
+"""
+Stack:
+0: abc
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+LOAD_STRING: 5
+"""
+Stack:
+0: abc
+1: abc
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+string + string
+ADD: 0
+"""
+Stack:
+0: abcabc
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+PRINT
+"""
+Stack:
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+PUSH_STRING: 
+
+"""
+Stack:
+0: 
+
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+PRINT
+"""
+Stack:
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+LOAD_STRING: 4
+"""
+Stack:
+0: xyz
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+PRINT
+"""
+Stack:
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+LOAD_INT: 2
+"""
+Stack:
+0: 16
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+PRINT
+"""
+Stack:
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+PUSH_STRING: 
+
+"""
+Stack:
+0: 
+
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+PRINT
+"""
+Stack:
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+0: 5
+"""
+RETURN
+"""
+Stack:
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+"""
+HALT
+"""
+Stack:
+
+Map:
+0: -16
+1: 16
+2: 16
+3: abc
+4: xyz
+5: abc
+
+Call stack:
+"""
