@@ -74,7 +74,7 @@ int main() {
         #if DEBUG
             std::cout << "RunTime start" << std::endl;
         #endif
-        RunTime* rt = new RunTime(OUTPUT_RUNTIME_FILE, OUTPUT_RUNTIME_LOG_FILE);
+        RunTime* rt = new RunTime(OUTPUT_RUNTIME_FILE);
         rt->run();
         delete rt;
         #if DEBUG

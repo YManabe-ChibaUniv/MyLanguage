@@ -4,14 +4,17 @@
 #define STR_SIZE 4
 #define LONG_SIZE 8
 
-RunTime::RunTime(std::string runtime_file_name, std::string runtime_log_file_name) {
+RunTime::RunTime(std::string runtime_file_name) {
     this->runtime_file.open(runtime_file_name, std::ios::in | std::ios::binary);
     if (!runtime_file.is_open()) {
         std::cout << "Error: RunTime::RunTime: runtime_file_name: " << runtime_file_name << std::endl;
         throw;
     }
 
-    this->runtime_log_file = std::ofstream(runtime_log_file_name, std::ios::out | std::ios::trunc);
+    #if DEBUG
+        this->runtime_log_file = std::ofstream(OUTPUT_RUNTIME_LOG_FILE, std::ios::out | std::ios::trunc);
+        this->disp_log_file = std::ofstream(OUTPUT_DISP_LOG_FILE, std::ios::out | std::ios::trunc);
+    #endif
 
     this->runtime_file.seekg(0, std::ios::end);
     std::streampos runtime_file_size = runtime_file.tellg();
@@ -26,7 +29,10 @@ RunTime::RunTime(std::string runtime_file_name, std::string runtime_log_file_nam
 
 RunTime::~RunTime() {
     this->runtime_file.close();
-    this->runtime_log_file.close();
+    #if DEBUG
+        this->runtime_log_file.close();
+        this->disp_log_file.close();
+    #endif
 
     this->stack.empty();
     this->vars.clear();
@@ -176,11 +182,14 @@ void RunTime::run(void) {
                 var1 = this->stack.top();
                 this->stack.pop();
                 std::cout << var1->__str();
-                delete var1;
+
                 #if DEBUG
+                    this->disp_log_file << var1->__str();
                     this->runtime_log_file << "PRINT" << std::endl;
                     this->logStackAndMap();
                 #endif
+
+                delete var1;
                 break;
             case OpCode::RETURN:
                 // back to call function address

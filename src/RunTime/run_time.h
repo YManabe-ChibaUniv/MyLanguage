@@ -4,6 +4,7 @@
 #include "../CodeGenerator/op_code.h"
 #include "var.h"
 #include "../debug.h"
+#include "../config.h"
 
 #include <fstream>
 #include <iostream>
@@ -15,12 +16,15 @@
 
 class RunTime {
     public:
-        RunTime(std::string runtime_file_name, std::string runtime_log_file_name);
+        RunTime(std::string runtime_file_name);
         ~RunTime();
         void run(void);
     private:
         std::ifstream runtime_file;
-        std::ofstream runtime_log_file;
+        #if DEBUG
+            std::ofstream runtime_log_file;
+            std::ofstream disp_log_file;
+        #endif
         std::vector<char> runtime;
         std::vector<char>::iterator runtime_iterator;
         std::vector<char>::iterator runtime_begin;
