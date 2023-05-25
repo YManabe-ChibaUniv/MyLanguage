@@ -1,9 +1,5 @@
 #include "debug.h"
-
-#define INPUT_SOURCE_FILE "source.m"
-#define OUTPUT_DUMP_FILE "dump/code.txt"
-#define OUTPUT_RUNTIME_FILE "dump/runtime"
-#define OUTPUT_RUNTIME_LOG_FILE "dump/runtime_log.txt"
+#include "config.h"
 
 #include "LexicalAnalysis/lexical_analysis.h"
 #include "Parser/parser.h"
