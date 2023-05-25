@@ -23,10 +23,10 @@ class Parser {
         SyntaxTree* tree;
         SyntaxTreeNode* parseProgram(void);
         std::vector<SyntaxTreeNode*> parseStatement(void);
-        // SyntaxTreeNode* parseExpression(void);
-        // SyntaxTreeNode* parseTerm(void);
-        // SyntaxTreeNode* parseFactor(void);
-        // SyntaxTreeNode* parseOperator(void);
+        SyntaxTreeNode* parseExpression(void);
+        SyntaxTreeNode* parseTerm(void);
+        SyntaxTreeNode* parseFactor(void);
+        SyntaxTreeNode* parseOperator(void);
         // SyntaxTreeNode* parseVariable(void);
         SyntaxTreeNode* parseReturnStatement(void);
         SyntaxTreeNode* parseFunctionCall(void);

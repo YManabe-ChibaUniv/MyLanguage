@@ -7,6 +7,7 @@ function main(void) -> void {
 	a = 32;
 	b = 16;
 	c = b;
+	a = a * (b + (c - a)) - b;
 	x = "abc";
 	y = "xyz";
 	z = x;
