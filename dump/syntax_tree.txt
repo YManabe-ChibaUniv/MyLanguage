@@ -47,9 +47,7 @@ PROGRAM
  |    |    |    |    |    |    |-- VAR_NAME : b
  |    |    |    |    |    |    |-- EXPRESSION
  |    |    |    |    |    |    |    |-- VAR_NAME : c
- |    |    |    |    |    |    |    |-- FUNCTION_CALL
- |    |    |    |    |    |    |    |    |-- FUNCTION_NAME : a
- |    |    |    |    |    |    |    |    |-- ARGUMENT_LIST
+ |    |    |    |    |    |    |    |-- VAR_NAME : a
  |    |    |    |    |    |    |    |-- OPERATOR : -
  |    |    |    |    |    |    |-- OPERATOR : +
  |    |    |    |    |    |-- OPERATOR : *
