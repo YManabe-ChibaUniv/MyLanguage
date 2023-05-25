@@ -73,7 +73,7 @@ void RunTime::run(void) {
                 var_address = this->readIntValueByIterator();
                 this->stack.push(new Var(this->vars[var_address]->getIntValue()));
                 #if DEBUG
-                    this->runtime_log_file << "LOAD_INT: " << this->vars[var_address]->getIntValue() << std::endl;
+                    this->runtime_log_file << "LOAD_INT: " << var_address << std::endl;
                     this->logStackAndMap();
                 #endif
                 break;
@@ -82,7 +82,7 @@ void RunTime::run(void) {
                 var_address = this->readIntValueByIterator();
                 this->stack.push(new Var(this->vars[var_address]->getStringValue()));
                 #if DEBUG
-                    this->runtime_log_file << "LOAD_STRING: " << this->vars[var_address]->getStringValue() << std::endl;
+                    this->runtime_log_file << "LOAD_STRING: " << var_address << std::endl;
                     this->logStackAndMap();
                 #endif
                 break;
@@ -92,7 +92,7 @@ void RunTime::run(void) {
                 this->vars[var_address] = this->stack.top();
                 this->stack.pop();
                 #if DEBUG
-                    this->runtime_log_file << "STORE_INT: " << this->vars[var_address]->getIntValue() << std::endl;
+                    this->runtime_log_file << "STORE_INT: " << var_address << std::endl;
                     this->logStackAndMap();
                 #endif
                 break;
@@ -102,7 +102,7 @@ void RunTime::run(void) {
                 this->vars[var_address] = this->stack.top();
                 this->stack.pop();
                 #if DEBUG
-                    this->runtime_log_file << "STORE_STRING: " << this->vars[var_address]->getStringValue() << std::endl;
+                    this->runtime_log_file << "STORE_STRING: " << var_address << std::endl;
                     this->logStackAndMap();
                 #endif
                 break;
@@ -114,12 +114,16 @@ void RunTime::run(void) {
 
                 // int32 + int32
                 if (var2->getType() == 1) {
-                    this->runtime_log_file << "int32 + int32" << std::endl;
+                    #if DEBUG
+                        this->runtime_log_file << "int32 + int32" << std::endl;
+                    #endif
                     this->stack.push(new Var(var2->getIntValue() + var1->getIntValue()));
                 }
                 // string + string
                 else if (var2->getType() == 2) {
-                    this->runtime_log_file << "string + string" << std::endl;
+                    #if DEBUG
+                        this->runtime_log_file << "string + string" << std::endl;
+                    #endif
                     this->stack.push(new Var(var2->getStringValue() + var1->getStringValue()));
                 }
                 delete var1;
@@ -139,6 +143,32 @@ void RunTime::run(void) {
                 delete var2;
                 #if DEBUG
                     this->runtime_log_file << "SUB: " << this->stack.top()->getIntValue() << std::endl;
+                    this->logStackAndMap();
+                #endif
+                break;
+            case OpCode::MUL:
+                var1 = this->stack.top();
+                this->stack.pop();
+                var2 = this->stack.top();
+                this->stack.pop();
+                this->stack.push(new Var(var2->getIntValue() * var1->getIntValue()));
+                delete var1;
+                delete var2;
+                #if DEBUG
+                    this->runtime_log_file << "MUL: " << this->stack.top()->getIntValue() << std::endl;
+                    this->logStackAndMap();
+                #endif
+                break;
+            case OpCode::DIV:
+                var1 = this->stack.top();
+                this->stack.pop();
+                var2 = this->stack.top();
+                this->stack.pop();
+                this->stack.push(new Var(var2->getIntValue() / var1->getIntValue()));
+                delete var1;
+                delete var2;
+                #if DEBUG
+                    this->runtime_log_file << "DIV: " << this->stack.top()->getIntValue() << std::endl;
                     this->logStackAndMap();
                 #endif
                 break;
@@ -229,6 +259,7 @@ std::string RunTime::readStringValueByIterator(int size) {
 }
 
 void RunTime::logStackAndMap(void) {
+    this->runtime_log_file << "\"\"\"" << std::endl;
     this->runtime_log_file << "Stack:" << std::endl;
     std::stack<Var*> stack_copy = this->stack;
     int i = 0;
@@ -251,7 +282,7 @@ void RunTime::logStackAndMap(void) {
         this->runtime_log_file << i++ << ": " << call_stack_copy.top() << std::endl;
         call_stack_copy.pop();
     }
-    this->runtime_log_file << std::endl;
+    this->runtime_log_file << "\"\"\"" << std::endl;
 
     return;
 }

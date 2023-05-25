@@ -30,6 +30,7 @@ class CodeGenerator {
         void printInstructions(std::vector<SyntaxTreeNode*> nodes);
         void storeValue(SyntaxTreeNode* node);
         void writeIntData(int value);
+        void writeOperator(TokenDetail td);
 };
 
 #endif

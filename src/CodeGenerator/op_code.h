@@ -12,6 +12,8 @@ enum class OpCode : uint8_t {
     STORE_STRING,
     ADD,
     SUB,
+    MUL,
+    DIV,
     PRINT,
     RETURN,
     JUMP,

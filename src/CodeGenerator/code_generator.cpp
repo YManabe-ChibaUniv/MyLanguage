@@ -28,7 +28,9 @@ void CodeGenerator::run(void) {
 void CodeGenerator::codeGen(SyntaxTreeNode* node) {
     SyntaxTreeNode* tmpNode;
     std::vector<SyntaxTreeNode*>::iterator itr;
+    std::vector<SyntaxTreeNode*>::iterator itr_end;
     std::vector<SyntaxTreeNode*> childNodes;
+    std::vector<SyntaxTreeNode*> _childNodes;
     TokenDetail td;
     int varAddress;
     int funcAddress;
@@ -93,8 +95,27 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
             tmpNode = *itr;
             varAddress = this->varTable->getAddress(tmpNode->getToken()->getValue());
             itr++;
-            // INT_LITERAL or STRING_LITERAL or VAR_NAME
             tmpNode = *itr;
+            // EXPRESSION
+            if (tmpNode->getType() == ASTNodeType::EXPRESSION) {
+                this->codeGen(tmpNode);
+                switch (this->varTable->getType(varAddress)) {
+                        case TokenDetail::DEF_INT32:
+                            this->outputDumpFile << "STORE_INT " << varAddress << std::endl;
+                            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::STORE_INT);
+                            this->writeIntData(varAddress);
+                            break;
+                        case TokenDetail::DEF_STRING:
+                            this->outputDumpFile << "STORE_STRING " << varAddress << std::endl;
+                            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::STORE_STRING);
+                            this->writeIntData(varAddress);
+                            break;
+                        default:
+                            break;
+                    }
+                break;
+            }
+            // INT_LITERAL or STRING_LITERAL or VAR_NAME
             switch (tmpNode->getToken()->getTokenType()->getTokenKind()) {
                 // INT_LITERAL
                 case TokenKind::TK_NUM:
@@ -176,31 +197,35 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
                 }
             }
             break;
-        case ASTNodeType::BINARY_EXPRESSION:
+        case ASTNodeType::EXPRESSION:
             childNodes = node->getChildren();
-            itr = childNodes.begin();
-            // INT_LITERAL or STRING_LITERAL or VAR_NAME
-            tmpNode = *itr;
-            this->storeValue(tmpNode);
-            itr++;
-            // OPERATOR
-            tmpNode = *itr;
-            td = tmpNode->getToken()->getTokenType()->getTokenDetail();
-            itr++;
-            // INT_LITERAL or STRING_LITERAL or VAR_NAME
-            tmpNode = *itr;
-            this->storeValue(tmpNode);
-            switch (td) {
-                case TokenDetail::PLUS:
-                    this->outputDumpFile << "ADD" << std::endl;
-                    this->outputRuntimeFile << static_cast<uint8_t>(OpCode::ADD);
-                    break;
-                case TokenDetail::MINUS:
-                    this->outputDumpFile << "SUB" << std::endl;
-                    this->outputRuntimeFile << static_cast<uint8_t>(OpCode::SUB);
-                    break;
-                default:
-                    break;
+            for (SyntaxTreeNode* childNode : childNodes) {
+                switch (childNode->getType()) {
+                    case ASTNodeType::VAR_NAME:
+                    case ASTNodeType::INT_LITERAL:
+                    case ASTNodeType::STRING_LITERAL:
+                        this->storeValue(childNode);
+                        _childNodes = childNode->getChildren();
+                        for (SyntaxTreeNode* _childNode: _childNodes) {
+                            if (_childNode->getType() == ASTNodeType::OPERATOR) {
+                                td = _childNode->getToken()->getTokenType()->getTokenDetail();
+                                this->writeOperator(td);
+                            }
+                            else {
+                                this->codeGen(_childNode);
+                            }
+                        }
+                        break;
+                    case ASTNodeType::OPERATOR:
+                        td = childNode->getToken()->getTokenType()->getTokenDetail();
+                        this->writeOperator(td);
+                        break;
+                    case ASTNodeType::EXPRESSION:
+                        this->codeGen(childNode);
+                        break;
+                    default:
+                        break;
+                }
             }
             break;
         case ASTNodeType::RETURN_STATEMENT:
@@ -214,7 +239,7 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
 
 void CodeGenerator::printInstructions(std::vector<SyntaxTreeNode*> nodes) {
     for (SyntaxTreeNode* node : nodes) {
-        // BINARY_EXPRESSION
+        // EXPRESSION
         if (node->getToken() == NULL) {
             this->codeGen(node);
             this->outputDumpFile << "PRINT" << std::endl;
@@ -303,6 +328,31 @@ void CodeGenerator::writeIntData(int value) {
     for (long unsigned int i = 0; i < sizeof(int); i++) {
         byte = static_cast<uint8_t>(value >> (i * 8));
         this->outputRuntimeFile.write(reinterpret_cast<const char*>(&byte), sizeof(byte));
+    }
+
+    return;
+}
+
+void CodeGenerator::writeOperator(TokenDetail td) {
+    switch (td) {
+        case TokenDetail::PLUS:
+            this->outputDumpFile << "ADD" << std::endl;
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::ADD);
+            break;
+        case TokenDetail::MINUS:
+            this->outputDumpFile << "SUB" << std::endl;
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::SUB);
+            break;
+        case TokenDetail::TIMES:
+            this->outputDumpFile << "MUL" << std::endl;
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::MUL);
+            break;
+        case TokenDetail::DIVISION:
+            this->outputDumpFile << "DIV" << std::endl;
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::DIV);
+            break;
+        default:
+            break;
     }
 
     return;

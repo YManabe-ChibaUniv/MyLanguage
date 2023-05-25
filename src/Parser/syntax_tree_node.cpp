@@ -108,8 +108,8 @@ std::string SyntaxTreeNode::__str(void) {
         case ASTNodeType::ARGUMENT_LIST:
             return "ARGUMENT_LIST";
             break;
-        case ASTNodeType::BINARY_EXPRESSION:
-            return "BINARY_EXPRESSION";
+        case ASTNodeType::EXPRESSION:
+            return "EXPRESSION";
             break;
         case ASTNodeType::OPERATOR:
             return "OPERATOR";
