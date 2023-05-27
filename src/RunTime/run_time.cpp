@@ -178,6 +178,19 @@ void RunTime::run(void) {
                     this->logStackAndMap();
                 #endif
                 break;
+            case OpCode::MOD:
+                var1 = this->stack.top();
+                this->stack.pop();
+                var2 = this->stack.top();
+                this->stack.pop();
+                this->stack.push(new Var(var2->getIntValue() % var1->getIntValue()));
+                delete var1;
+                delete var2;
+                #if DEBUG
+                    this->runtime_log_file << "MOD: " << this->stack.top()->getIntValue() << std::endl;
+                    this->logStackAndMap();
+                #endif
+                break;
             case OpCode::PRINT:
                 var1 = this->stack.top();
                 this->stack.pop();

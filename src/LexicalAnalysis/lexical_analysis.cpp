@@ -61,6 +61,15 @@ std::vector<Token*> LexicalAnalysis::run(void) {
                 }
             }
             if (!isKeyword) {
+                for (std::pair<TokenDetail, std::string> p : this->rk->getOperators()) {
+                    if (identifier == p.second) {
+                        isKeyword = true;
+                        token->setTokenType(new TokenType(TokenKind::TK_OPERATOR, p.first));
+                        break;
+                    }
+                }
+            }
+            if (!isKeyword) {
                 token->setTokenType(new TokenType(TokenKind::TK_IDENT, TokenDetail::NOTHING));
             }
         }

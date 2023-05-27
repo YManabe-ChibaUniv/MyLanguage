@@ -205,11 +205,17 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
                     case ASTNodeType::INT_LITERAL:
                     case ASTNodeType::STRING_LITERAL:
                         this->storeValue(childNode);
+
                         _childNodes = childNode->getChildren();
                         for (SyntaxTreeNode* _childNode: _childNodes) {
                             if (_childNode->getType() == ASTNodeType::OPERATOR) {
                                 td = _childNode->getToken()->getTokenType()->getTokenDetail();
                                 this->writeOperator(td);
+                            }
+                            else if (_childNode->getType() == ASTNodeType::VAR_NAME ||
+                                    _childNode->getType() == ASTNodeType::INT_LITERAL ||
+                                    _childNode->getType() == ASTNodeType::STRING_LITERAL) {
+                                this->storeValue(_childNode);
                             }
                             else {
                                 this->codeGen(_childNode);
@@ -350,6 +356,10 @@ void CodeGenerator::writeOperator(TokenDetail td) {
         case TokenDetail::DIVISION:
             this->outputDumpFile << "DIV" << std::endl;
             this->outputRuntimeFile << static_cast<uint8_t>(OpCode::DIV);
+            break;
+        case TokenDetail::MOD:
+            this->outputDumpFile << "MOD" << std::endl;
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::MOD);
             break;
         default:
             break;

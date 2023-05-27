@@ -8,6 +8,7 @@ function main(void) -> void {
 	b = 16;
 	c = b;
 	a = a * (b + (c - a)) - b;
+	a = a mod 10;
 	x = "abc";
 	y = "xyz";
 	z = x;

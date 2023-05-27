@@ -54,6 +54,12 @@ PROGRAM
  |    |    |    |    |-- VAR_NAME : b
  |    |    |    |    |-- OPERATOR : -
  |    |    |-- ASSIGNMENT_EXPRESSION
+ |    |    |    |-- VAR_NAME : a
+ |    |    |    |-- EXPRESSION
+ |    |    |    |    |-- VAR_NAME : a
+ |    |    |    |    |    |-- INT_LITERAL : 10
+ |    |    |    |    |    |-- OPERATOR : mod
+ |    |    |-- ASSIGNMENT_EXPRESSION
  |    |    |    |-- VAR_NAME : x
  |    |    |    |-- EXPRESSION
  |    |    |    |    |-- STRING_LITERAL : abc
