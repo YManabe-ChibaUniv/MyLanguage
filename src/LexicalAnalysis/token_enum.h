@@ -35,6 +35,7 @@ enum class TokenDetail : int {
 
     // operators
     RETURN_TYPE,            // ->
+    MOD,                    // mod
     EQUAL,                  // =
     PLUS,                   // +
     MINUS,                  // -

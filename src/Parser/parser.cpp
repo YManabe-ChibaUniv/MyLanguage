@@ -117,11 +117,11 @@ SyntaxTreeNode* Parser::parseExpression(void) {
 }
 
 SyntaxTreeNode* Parser::parseTerm(void) {
-    // Term = Factor ((* | /) Factor)*
+    // Term = Factor ((* | / | mod) Factor)*
     SyntaxTreeNode* node = this->parseFactor();
     SyntaxTreeNode* op;
 
-    while (this->tokens[this->index]->getTokenType()->getTokenDetail() == TokenDetail::TIMES || this->tokens[this->index]->getTokenType()->getTokenDetail() == TokenDetail::DIVISION) {
+    while (this->tokens[this->index]->getTokenType()->getTokenDetail() == TokenDetail::TIMES || this->tokens[this->index]->getTokenType()->getTokenDetail() == TokenDetail::DIVISION || this->tokens[this->index]->getTokenType()->getTokenDetail() == TokenDetail::MOD) {
         op = this->parseOperator();
         node->addChild(this->parseFactor());
         node->addChild(op);
@@ -175,7 +175,7 @@ SyntaxTreeNode* Parser::parseOperator(void) {
     SyntaxTreeNode* node = nullptr;
     Token* token = this->tokens[this->index];
     TokenDetail td = token->getTokenType()->getTokenDetail();
-    if (td == TokenDetail::PLUS || td == TokenDetail::MINUS || td == TokenDetail::TIMES || td == TokenDetail::DIVISION) {
+    if (td == TokenDetail::PLUS || td == TokenDetail::MINUS || td == TokenDetail::TIMES || td == TokenDetail::DIVISION || td == TokenDetail::MOD) {
         node = new SyntaxTreeNode(token, ASTNodeType::OPERATOR);
         this->index++;
     } else {

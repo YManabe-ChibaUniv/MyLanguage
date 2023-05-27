@@ -83,6 +83,9 @@ std::string TokenType::__str(void) {
         case TokenDetail::RETURN_TYPE:
             str += "RETURN_TYPE";
             break;
+        case TokenDetail::MOD:
+            str += "MOD";
+            break;
         case TokenDetail::EQUAL:
             str += "EQUAL";
             break;

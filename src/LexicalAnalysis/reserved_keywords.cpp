@@ -55,6 +55,7 @@ void ReservedKeywords::setPunctuators(void) {
 
 void ReservedKeywords::setOperators(void) {
     this->operators.emplace(TokenDetail::RETURN_TYPE, "->");
+    this->operators.emplace(TokenDetail::MOD, "mod");
     this->operators.emplace(TokenDetail::EQUAL, "=");
     this->operators.emplace(TokenDetail::PLUS, "+");
     this->operators.emplace(TokenDetail::MINUS, "-");

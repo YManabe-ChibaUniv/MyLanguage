@@ -14,6 +14,7 @@ enum class OpCode : uint8_t {
     SUB,
     MUL,
     DIV,
+    MOD,
     PRINT,
     RETURN,
     JUMP,
