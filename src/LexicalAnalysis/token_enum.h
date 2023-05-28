@@ -23,6 +23,10 @@ enum class TokenDetail : int {
     DEF_STRING,             // string
     DEF_VOID,               // void
     DEF_RETURN,             // return
+    IF,                     // if
+    ELSE,                   // else
+    TRUE,                   // TRUE
+    FALSE,                  // FALSE
 
     // punctuators
     LEFT_PARENTHESE,        // (
@@ -35,8 +39,16 @@ enum class TokenDetail : int {
 
     // operators
     RETURN_TYPE,            // ->
-    MOD,                    // mod
+    MOD,                    // MOD
+    AND,                    // AND
+    OR,                     // OR
+    NOT,                    // NOT
+    CMP_EQUAL,              // ==
+    CMP_NOT_EQUAL,          // !=
+    SMALLER_EQUAL,          // <=
+    LARGER_EQUAL,           // >=
     EQUAL,                  // =
+    NOT_SYM,                // !
     PLUS,                   // +
     MINUS,                  // -
     TIMES,                  // *

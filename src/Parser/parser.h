@@ -15,6 +15,7 @@
 #include <iostream>
 #include <experimental/source_location>
 #include <fstream>
+#include <stack>
 
 class Parser {
     protected:
@@ -24,10 +25,10 @@ class Parser {
         SyntaxTreeNode* parseProgram(void);
         std::vector<SyntaxTreeNode*> parseStatement(void);
         SyntaxTreeNode* parseExpression(void);
+        SyntaxTreeNode* parseElement(void);
         SyntaxTreeNode* parseTerm(void);
         SyntaxTreeNode* parseFactor(void);
         SyntaxTreeNode* parseOperator(void);
-        // SyntaxTreeNode* parseVariable(void);
         SyntaxTreeNode* parseReturnStatement(void);
         SyntaxTreeNode* parseFunctionCall(void);
         SyntaxTreeNode* parseFunctionDefinition(void);
@@ -36,6 +37,11 @@ class Parser {
         SyntaxTreeNode* parseBlockStatement(void);
         SyntaxTreeNode* parseBinaryExpression(void);
         SyntaxTreeNode* parseArgumentList(void);
+        SyntaxTreeNode* parseIfStatement(void);
+        SyntaxTreeNode* parseIfExpression(void);
+        SyntaxTreeNode* parseIfTerm(void);
+        SyntaxTreeNode* parseIfFactor(void);
+        SyntaxTreeNode* parseIfOperator(void);
         void runError(Token* token, const std::experimental::fundamentals_v2::source_location& location = std::experimental::fundamentals_v2::source_location::current());
     public:
         Parser(std::vector<Token*> tokens);

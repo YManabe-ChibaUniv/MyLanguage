@@ -7,10 +7,15 @@
 #include "../LexicalAnalysis/token_enum.h"
 #include "var_table.h"
 #include "function_table.h"
+#include "../config.h"
+#include "../debug.h"
 
 #include <vector>
 #include <fstream>
 #include <cstdint>
+#include <stack>
+#include <sstream>
+#include <iomanip>
 
 class CodeGenerator {
     public:
@@ -20,6 +25,7 @@ class CodeGenerator {
     private:
         std::ofstream outputDumpFile;
         std::ofstream outputRuntimeFile;
+        std::ofstream outputOpCOdeFile;
         std::vector<Instruction*> instructions;
         SyntaxTree* root;
         VarTable* varTable;
@@ -31,6 +37,8 @@ class CodeGenerator {
         void storeValue(SyntaxTreeNode* node);
         void writeIntData(int value);
         void writeOperator(TokenDetail td);
+        void writeAddress(int value, int writeAddress);
+        void logOpCodes(void);
 };
 
 #endif

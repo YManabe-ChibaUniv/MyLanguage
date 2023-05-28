@@ -19,6 +19,9 @@ PROGRAM
  |    |    |    |-- VAR_TYPE : int32
  |    |    |    |-- VAR_NAME : c
  |    |    |-- VAR_DEFINITION
+ |    |    |    |-- VAR_TYPE : int32
+ |    |    |    |-- VAR_NAME : d
+ |    |    |-- VAR_DEFINITION
  |    |    |    |-- VAR_TYPE : string
  |    |    |    |-- VAR_NAME : x
  |    |    |-- VAR_DEFINITION
@@ -45,20 +48,97 @@ PROGRAM
  |    |    |    |    |-- VAR_NAME : a
  |    |    |    |    |    |-- EXPRESSION
  |    |    |    |    |    |    |-- VAR_NAME : b
- |    |    |    |    |    |    |-- EXPRESSION
- |    |    |    |    |    |    |    |-- VAR_NAME : c
- |    |    |    |    |    |    |    |-- VAR_NAME : a
- |    |    |    |    |    |    |    |-- OPERATOR : -
- |    |    |    |    |    |    |-- OPERATOR : +
+ |    |    |    |    |    |    |    |-- EXPRESSION
+ |    |    |    |    |    |    |    |    |-- VAR_NAME : c
+ |    |    |    |    |    |    |    |    |    |-- VAR_NAME : a
+ |    |    |    |    |    |    |    |    |    |-- OPERATOR : -
+ |    |    |    |    |    |    |    |-- OPERATOR : +
  |    |    |    |    |    |-- OPERATOR : *
- |    |    |    |    |-- VAR_NAME : b
- |    |    |    |    |-- OPERATOR : -
+ |    |    |    |    |    |-- VAR_NAME : b
+ |    |    |    |    |    |-- OPERATOR : +
+ |    |    |    |    |    |-- INT_LITERAL : 1
+ |    |    |    |    |    |-- OPERATOR : -
  |    |    |-- ASSIGNMENT_EXPRESSION
- |    |    |    |-- VAR_NAME : a
+ |    |    |    |-- VAR_NAME : d
  |    |    |    |-- EXPRESSION
  |    |    |    |    |-- VAR_NAME : a
- |    |    |    |    |    |-- INT_LITERAL : 10
- |    |    |    |    |    |-- OPERATOR : mod
+ |    |    |    |    |    |-- INT_LITERAL : 3
+ |    |    |    |    |    |-- OPERATOR : MOD
+ |    |    |-- FUNCTION_CALL
+ |    |    |    |-- FUNCTION_NAME : print
+ |    |    |    |-- ARGUMENT_LIST
+ |    |    |    |    |-- EXPRESSION
+ |    |    |    |    |    |-- VAR_NAME : a
+ |    |    |    |    |-- EXPRESSION
+ |    |    |    |    |    |-- STRING_LITERAL :  mod 3 = 
+ |    |    |-- IF_STATEMENT
+ |    |    |    |-- EXPRESSION
+ |    |    |    |    |-- EXPRESSION
+ |    |    |    |    |    |-- VAR_NAME : d
+ |    |    |    |    |    |-- OPERATOR : NOT
+ |    |    |    |    |    |-- EXPRESSION
+ |    |    |    |    |    |    |-- BOOLEAN_LITERAL : TRUE
+ |    |    |    |    |    |    |-- BOOLEAN_LITERAL : FALSE
+ |    |    |    |    |    |    |-- OPERATOR : OR
+ |    |    |    |    |    |-- OPERATOR : AND
+ |    |    |    |    |    |-- EXPRESSION
+ |    |    |    |    |    |    |-- INT_LITERAL : 0
+ |    |    |    |    |    |    |-- VAR_NAME : d
+ |    |    |    |    |    |    |    |-- INT_LITERAL : 2
+ |    |    |    |    |    |    |    |-- OPERATOR : +
+ |    |    |    |    |    |    |-- OPERATOR : <
+ |    |    |    |    |    |    |-- VAR_NAME : d
+ |    |    |    |    |    |    |    |-- INT_LITERAL : 2
+ |    |    |    |    |    |    |    |-- OPERATOR : +
+ |    |    |    |    |    |    |-- INT_LITERAL : 2
+ |    |    |    |    |    |    |-- OPERATOR : ==
+ |    |    |    |    |    |    |-- OPERATOR : AND
+ |    |    |    |    |    |    |-- INT_LITERAL : 2
+ |    |    |    |    |    |    |-- INT_LITERAL : 1
+ |    |    |    |    |    |    |-- OPERATOR : >=
+ |    |    |    |    |    |    |-- OPERATOR : AND
+ |    |    |    |    |    |-- OPERATOR : AND
+ |    |    |    |    |-- EXPRESSION
+ |    |    |    |    |    |-- INT_LITERAL : 1
+ |    |    |    |    |    |-- INT_LITERAL : 2
+ |    |    |    |    |    |-- OPERATOR : >
+ |    |    |    |    |-- OPERATOR : OR
+ |    |    |    |-- BLOCK
+ |    |    |    |    |-- FUNCTION_CALL
+ |    |    |    |    |    |-- FUNCTION_NAME : println
+ |    |    |    |    |    |-- ARGUMENT_LIST
+ |    |    |    |    |    |    |-- EXPRESSION
+ |    |    |    |    |    |    |    |-- STRING_LITERAL : 0
+ |    |    |    |-- EXPRESSION
+ |    |    |    |    |-- EXPRESSION
+ |    |    |    |    |    |-- VAR_NAME : d
+ |    |    |    |    |    |-- INT_LITERAL : 1
+ |    |    |    |    |    |-- OPERATOR : ==
+ |    |    |    |    |    |-- EXPRESSION
+ |    |    |    |    |    |    |-- EXPRESSION
+ |    |    |    |    |    |    |    |-- VAR_NAME : a
+ |    |    |    |    |    |    |    |-- VAR_NAME : a
+ |    |    |    |    |    |    |    |-- OPERATOR : ==
+ |    |    |    |    |    |    |-- EXPRESSION
+ |    |    |    |    |    |    |    |-- INT_LITERAL : 1
+ |    |    |    |    |    |    |    |-- INT_LITERAL : 0
+ |    |    |    |    |    |    |    |-- OPERATOR : !=
+ |    |    |    |    |    |    |-- OPERATOR : OR
+ |    |    |    |    |    |-- OPERATOR : AND
+ |    |    |    |-- BLOCK
+ |    |    |    |    |-- FUNCTION_CALL
+ |    |    |    |    |    |-- FUNCTION_NAME : println
+ |    |    |    |    |    |-- ARGUMENT_LIST
+ |    |    |    |    |    |    |-- EXPRESSION
+ |    |    |    |    |    |    |    |-- STRING_LITERAL : 1
+ |    |    |    |-- EXPRESSION
+ |    |    |    |    |-- BOOLEAN_LITERAL : TRUE
+ |    |    |    |-- BLOCK
+ |    |    |    |    |-- FUNCTION_CALL
+ |    |    |    |    |    |-- FUNCTION_NAME : println
+ |    |    |    |    |    |-- ARGUMENT_LIST
+ |    |    |    |    |    |    |-- EXPRESSION
+ |    |    |    |    |    |    |    |-- STRING_LITERAL : 2
  |    |    |-- ASSIGNMENT_EXPRESSION
  |    |    |    |-- VAR_NAME : x
  |    |    |    |-- EXPRESSION
@@ -87,15 +167,15 @@ PROGRAM
  |    |    |    |-- ARGUMENT_LIST
  |    |    |    |    |-- EXPRESSION
  |    |    |    |    |    |-- VAR_NAME : a
- |    |    |    |    |    |-- VAR_NAME : b
- |    |    |    |    |    |-- OPERATOR : +
+ |    |    |    |    |    |    |-- VAR_NAME : b
+ |    |    |    |    |    |    |-- OPERATOR : +
  |    |    |-- FUNCTION_CALL
  |    |    |    |-- FUNCTION_NAME : println
  |    |    |    |-- ARGUMENT_LIST
  |    |    |    |    |-- EXPRESSION
  |    |    |    |    |    |-- VAR_NAME : x
- |    |    |    |    |    |-- VAR_NAME : z
- |    |    |    |    |    |-- OPERATOR : +
+ |    |    |    |    |    |    |-- VAR_NAME : z
+ |    |    |    |    |    |    |-- OPERATOR : +
  |    |    |-- FUNCTION_CALL
  |    |    |    |-- FUNCTION_NAME : println
  |    |    |    |-- ARGUMENT_LIST

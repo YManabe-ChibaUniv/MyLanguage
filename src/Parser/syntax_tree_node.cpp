@@ -7,7 +7,7 @@ SyntaxTreeNode::SyntaxTreeNode(Token* token, ASTNodeType type) {
 }
 
 SyntaxTreeNode::~SyntaxTreeNode() {
-    for (auto child : this->children) {
+    for (SyntaxTreeNode* child : this->getChildren()) {
         delete child;
     }
 }
@@ -102,6 +102,9 @@ std::string SyntaxTreeNode::__str(void) {
         case ASTNodeType::STRING_LITERAL:
             return "STRING_LITERAL";
             break;
+        case ASTNodeType::BOOLEAN_LITERAL:
+            return "BOOLEAN_LITERAL";
+            break;
         case ASTNodeType::FUNCTION_CALL:
             return "FUNCTION_CALL";
             break;
@@ -123,6 +126,17 @@ std::string SyntaxTreeNode::__str(void) {
         case ASTNodeType::RETURN_TYPE:
             return "RETURN_TYPE";
             break;
+        case ASTNodeType::IF_STATEMENT:
+            return "IF_STATEMENT";
+            break;
     }
     return "UNKNOWN";
+}
+
+SyntaxTreeNode* SyntaxTreeNode::clone(void) {
+    SyntaxTreeNode* clone = new SyntaxTreeNode(this->token, this->type);
+    for (SyntaxTreeNode* child : this->children) {
+        clone->addChild(child->clone());
+    }
+    return clone;
 }

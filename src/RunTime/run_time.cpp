@@ -191,6 +191,202 @@ void RunTime::run(void) {
                     this->logStackAndMap();
                 #endif
                 break;
+            case OpCode::AND:
+                var1 = this->stack.top();
+                this->stack.pop();
+                var2 = this->stack.top();
+                this->stack.pop();
+                if (var1->getIntValue() == 0 || var2->getIntValue() == 0) {
+                    this->stack.push(new Var(0));
+                }
+                else {
+                    this->stack.push(new Var(1));
+                }
+                #if DEBUG
+                    this->runtime_log_file << "AND: " << var2->__str() << " && " << var1->__str() << " " << this->stack.top()->getIntValue() << std::endl;
+                    this->logStackAndMap();
+                #endif
+                delete var1;
+                delete var2;
+
+                break;
+            case OpCode::OR:
+                var1 = this->stack.top();
+                this->stack.pop();
+                var2 = this->stack.top();
+                this->stack.pop();
+                if (var1->getIntValue() != 0 || var2->getIntValue() != 0) {
+                    this->stack.push(new Var(1));
+                }
+                else {
+                    this->stack.push(new Var(0));
+                }
+                #if DEBUG
+                    this->runtime_log_file << "AND: " << var2->__str() << " || " << var1->__str() << " " << this->stack.top()->getIntValue() << std::endl;
+                    this->logStackAndMap();
+                #endif
+                delete var1;
+                delete var2;
+                break;
+            case OpCode::NOT:
+                var1 = this->stack.top();
+                this->stack.pop();
+                if (var1->getIntValue() == 0) {
+                    this->stack.push(new Var(1));
+                }
+                else {
+                    this->stack.push(new Var(0));
+                }
+                #if DEBUG
+                    this->runtime_log_file << "NOT: " << var1->__str() << " " << this->stack.top()->getIntValue() << std::endl;
+                    this->logStackAndMap();
+                #endif
+                delete var1;
+                break;
+            case OpCode::CMP_EQUAL:
+                var1 = this->stack.top();
+                this->stack.pop();
+                var2 = this->stack.top();
+                this->stack.pop();
+                // int32 + int32
+                if (var2->getType() == 1) {
+                    #if DEBUG
+                        this->runtime_log_file << "int32 + int32" << std::endl;
+                    #endif
+                    if (var2->getIntValue() == var1->getIntValue()) {
+                        this->stack.push(new Var(1));
+                    }
+                    else {
+                        this->stack.push(new Var(0));
+                    }
+                }
+                // string + string
+                else if (var2->getType() == 2) {
+                    #if DEBUG
+                        this->runtime_log_file << "string + string" << std::endl;
+                    #endif
+                    if (var2->getStringValue() == var1->getStringValue()) {
+                        this->stack.push(new Var(1));
+                    }
+                    else {
+                        this->stack.push(new Var(0));
+                    }
+                }
+                #if DEBUG
+                    this->runtime_log_file << "CMP_EQUAL: " << var2->__str() << " == " << var1->__str() << std::endl;
+                    this->logStackAndMap();
+                #endif
+                delete var1;
+                delete var2;
+                break;
+            case OpCode::CMP_NOT_EQUAL:
+                var1 = this->stack.top();
+                this->stack.pop();
+                var2 = this->stack.top();
+                this->stack.pop();
+                // int32 + int32
+                if (var2->getType() == 1) {
+                    #if DEBUG
+                        this->runtime_log_file << "int32 + int32" << std::endl;
+                    #endif
+                    if (var2->getIntValue() == var1->getIntValue()) {
+                        this->stack.push(new Var(0));
+                    }
+                    else {
+                        this->stack.push(new Var(1));
+                    }
+                }
+                // string + string
+                else if (var2->getType() == 2) {
+                    #if DEBUG
+                        this->runtime_log_file << "string + string" << std::endl;
+                    #endif
+                    if (var2->getStringValue() == var1->getStringValue()) {
+                        this->stack.push(new Var(0));
+                    }
+                    else {
+                        this->stack.push(new Var(1));
+                    }
+                }
+                #if DEBUG
+                    this->runtime_log_file << "CMP_NOT_EQUAL: " << var2->__str() << " != " << var1->__str() << std::endl;
+                    this->logStackAndMap();
+                #endif
+                delete var1;
+                delete var2;
+                break;
+            case OpCode::CMP_LESS:
+                var1 = this->stack.top();
+                this->stack.pop();
+                var2 = this->stack.top();
+                this->stack.pop();
+                if (var2->getIntValue() < var1->getIntValue()) {
+                    this->stack.push(new Var(1));
+                }
+                else {
+                    this->stack.push(new Var(0));
+                }
+                #if DEBUG
+                    this->runtime_log_file << "CMP_LESS: " << var2->__str() << " < " << var1->__str() << std::endl;
+                    this->logStackAndMap();
+                #endif
+                delete var1;
+                delete var2;
+                break;
+            case OpCode::CMP_LESS_EQUAL:
+                var1 = this->stack.top();
+                this->stack.pop();
+                var2 = this->stack.top();
+                this->stack.pop();
+                if (var2->getIntValue() <= var1->getIntValue()) {
+                    this->stack.push(new Var(1));
+                }
+                else {
+                    this->stack.push(new Var(0));
+                }
+                #if DEBUG
+                    this->runtime_log_file << "CMP_LESS_EQUAL: " << var2->__str() << " <= " << var1->__str() << std::endl;
+                    this->logStackAndMap();
+                #endif
+                delete var1;
+                delete var2;
+                break;
+            case OpCode::CMP_GREATER:
+                var1 = this->stack.top();
+                this->stack.pop();
+                var2 = this->stack.top();
+                this->stack.pop();
+                if (var2->getIntValue() > var1->getIntValue()) {
+                    this->stack.push(new Var(1));
+                }
+                else {
+                    this->stack.push(new Var(0));
+                }
+                #if DEBUG
+                    this->runtime_log_file << "CMP_GREATER: " << var2->__str() << " > " << var1->__str() << std::endl;
+                    this->logStackAndMap();
+                #endif
+                delete var1;
+                delete var2;
+                break;
+            case OpCode::CMP_GREATER_EQUAL:
+                var1 = this->stack.top();
+                this->stack.pop();
+                var2 = this->stack.top();
+                this->stack.pop();
+                if (var2->getIntValue() >= var1->getIntValue()) {
+                    this->stack.push(new Var(1));
+                }
+                else {
+                    this->stack.push(new Var(0));
+                }
+                #if DEBUG
+                    this->runtime_log_file << "CMP_GREATER_EQUAL: " << var2->__str() << " >= " << var1->__str() << std::endl;
+                    this->logStackAndMap();
+                #endif
+                delete var1;
+                delete var2;
+                break;
             case OpCode::PRINT:
                 var1 = this->stack.top();
                 this->stack.pop();
@@ -252,6 +448,20 @@ void RunTime::run(void) {
                 #endif
 
                 break;
+            case OpCode::JUMP_IF_FALSE:
+                var1 = this->stack.top();
+                this->stack.pop();
+                // function address
+                function_address = this->readIntValueByIterator();
+                if (var1->getIntValue() == 0) {
+                    this->runtime_iterator = this->runtime_begin + function_address;
+                }
+                #if DEBUG
+                    this->runtime_log_file << "JUMP: " << function_address << std::endl;
+                    this->logStackAndMap();
+                #endif
+                delete var1;
+                break;
         }
     }
 
@@ -259,10 +469,12 @@ void RunTime::run(void) {
 }
 
 int RunTime::readIntValueByIterator(void) {
-    int int_value = 0;
+    int int_value = 0x00000000;
+    int filter = 0x000000FF;
 
     for (int i = 0; i < INT32_SIZE; i++) {
-        int_value |= (*this->runtime_iterator << (i * 8));
+        int_value |= filter & (*this->runtime_iterator << (i * 8));
+        filter <<= 8;
         this->runtime_iterator++;
     }
 

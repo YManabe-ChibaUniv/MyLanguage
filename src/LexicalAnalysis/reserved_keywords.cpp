@@ -39,6 +39,10 @@ void ReservedKeywords::setTokenKeywords(void) {
     this->keywords.emplace(TokenDetail::DEF_STRING, "string");
     this->keywords.emplace(TokenDetail::DEF_VOID, "void");
     this->keywords.emplace(TokenDetail::DEF_RETURN, "return");
+    this->keywords.emplace(TokenDetail::IF, "if");
+    this->keywords.emplace(TokenDetail::ELSE, "else");
+    this->keywords.emplace(TokenDetail::TRUE, "TRUE");
+    this->keywords.emplace(TokenDetail::FALSE, "FALSE");
     return;
 }
 
@@ -55,8 +59,16 @@ void ReservedKeywords::setPunctuators(void) {
 
 void ReservedKeywords::setOperators(void) {
     this->operators.emplace(TokenDetail::RETURN_TYPE, "->");
-    this->operators.emplace(TokenDetail::MOD, "mod");
+    this->operators.emplace(TokenDetail::MOD, "MOD");
+    this->operators.emplace(TokenDetail::AND, "AND");
+    this->operators.emplace(TokenDetail::OR, "OR");
+    this->operators.emplace(TokenDetail::NOT, "NOT");
+    this->operators.emplace(TokenDetail::CMP_EQUAL, "==");
+    this->operators.emplace(TokenDetail::CMP_NOT_EQUAL, "!=");
+    this->operators.emplace(TokenDetail::SMALLER_EQUAL, "<=");
+    this->operators.emplace(TokenDetail::LARGER_EQUAL, ">=");
     this->operators.emplace(TokenDetail::EQUAL, "=");
+    this->operators.emplace(TokenDetail::NOT_SYM, "!");
     this->operators.emplace(TokenDetail::PLUS, "+");
     this->operators.emplace(TokenDetail::MINUS, "-");
     this->operators.emplace(TokenDetail::TIMES, "*");

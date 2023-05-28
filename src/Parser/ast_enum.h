@@ -13,6 +13,7 @@ enum class ASTNodeType : int {
     ASSIGNMENT_EXPRESSION,
     INT_LITERAL,
     STRING_LITERAL,
+    BOOLEAN_LITERAL,
     FUNCTION_CALL,
     ARGUMENT_LIST,
     EXPRESSION,
@@ -20,6 +21,7 @@ enum class ASTNodeType : int {
     RETURN_STATEMENT,
     RETURN_LIST,
     RETURN_TYPE,
+    IF_STATEMENT,
 };
 
 #endif

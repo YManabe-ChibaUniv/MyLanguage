@@ -18,9 +18,10 @@ int main() {
         std::cout << "Process start" << std::endl;
     #endif
     std::vector<Token*> tokens;
-    SyntaxTree* root;
+    SyntaxTree* root = NULL;
 
     // LexicalAnalysis
+    #if ENABLE_LEXICAL_ANALYSIS
     try {
         #if DEBUG
             std::cout << "LexicalAnalysis start" << std::endl;
@@ -35,8 +36,10 @@ int main() {
     catch (...) {
         error("Exception: LexicalAnalysis");
     }
+    #endif
 
     // Parser
+    #if ENABLE_PARSER
     try {
         #if DEBUG
             std::cout << "Parser start" << std::endl;
@@ -52,8 +55,10 @@ int main() {
     catch (...) {
         error("Exception: Parser");
     }
+    #endif
 
     // CodeGeneration
+    #if ENABLE_CODE_GENERATION
     try {
         #if DEBUG
             std::cout << "CodeGeneration start" << std::endl;
@@ -68,8 +73,10 @@ int main() {
     catch (...) {
         error("Exception: CodeGeneration");
     }
+    #endif
 
     // RunTime
+    #if ENABLE_RUNTIME
     try {
         #if DEBUG
             std::cout << "RunTime start" << std::endl;
@@ -84,12 +91,15 @@ int main() {
     catch (...) {
         error("Exception: RunTime");
     }
+    #endif
 
     for (Token* t : tokens) {
         delete t;
     }
     tokens.clear();
-    delete root;
+    if (root != NULL) {
+        delete root;
+    }
 
     #if DEBUG
         std::cout << "Process end" << std::endl;
