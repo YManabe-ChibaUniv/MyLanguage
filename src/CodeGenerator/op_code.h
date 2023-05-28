@@ -15,12 +15,22 @@ enum class OpCode : uint8_t {
     MUL,
     DIV,
     MOD,
+    AND,
+    OR,
+    NOT,
+    CMP_EQUAL,
+    CMP_NOT_EQUAL,
+    CMP_LESS,
+    CMP_LESS_EQUAL,
+    CMP_GREATER,
+    CMP_GREATER_EQUAL,
     PRINT,
     RETURN,
     JUMP,
     HALT,
     LABEL,
     CALL,
+    JUMP_IF_FALSE,
 };
 
 #endif

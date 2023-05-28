@@ -4,6 +4,10 @@ CodeGenerator::CodeGenerator(SyntaxTree* root, std::string outputDumpFileName, s
     this->root = root;
     this->outputDumpFile.open(outputDumpFileName);
     this->outputRuntimeFile.open(outputRuntimeFileName, std::ios::binary);
+    this->outputOpCOdeFile.open(OUTPUT_OPCODE_FILE, std::ios::out);
+    #if DEBUG
+        this->logOpCodes();
+    #endif
     this->varTable = new VarTable();
     this->functionTable = new FunctionTable();
 }
@@ -15,14 +19,16 @@ CodeGenerator::~CodeGenerator() {
     this->instructions.clear();
     this->outputDumpFile.close();
     this->outputRuntimeFile.close();
+    this->outputOpCOdeFile.close();
     delete this->varTable;
     delete this->functionTable;
 }
 
 void CodeGenerator::run(void) {
     this->codeGen(this->root->getRoot());
-    this->outputRuntimeFile.seekp(this->mainCallAddress);
-    this->writeIntData((int) this->mainFunctionAddress);
+    this->writeAddress((int) this->mainFunctionAddress, this->mainCallAddress);
+
+    return;
 }
 
 void CodeGenerator::codeGen(SyntaxTreeNode* node) {
@@ -31,6 +37,7 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
     std::vector<SyntaxTreeNode*>::iterator itr_end;
     std::vector<SyntaxTreeNode*> childNodes;
     std::vector<SyntaxTreeNode*> _childNodes;
+    std::vector<int> jumpToEndInsutructionAddress;
     TokenDetail td;
     int varAddress;
     int funcAddress;
@@ -115,7 +122,7 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
                     }
                 break;
             }
-            // INT_LITERAL or STRING_LITERAL or VAR_NAME
+            // INT_LITERAL or BOOLEAN_LITERAL or STRING_LITERAL or VAR_NAME
             switch (tmpNode->getToken()->getTokenType()->getTokenKind()) {
                 // INT_LITERAL
                 case TokenKind::TK_NUM:
@@ -160,6 +167,28 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
                     }
                     break;
                 default:
+                    // BOOLEAN_LITERAL
+                    td = tmpNode->getToken()->getTokenType()->getTokenDetail();
+                    switch (td) {
+                        case TokenDetail::TRUE:
+                            this->outputDumpFile << "PUSH_INT TRUE" << std::endl;
+                            this->outputDumpFile << "STORE_INT " << varAddress << std::endl;
+                            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_INT);
+                            this->writeIntData(1);
+                            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::STORE_INT);
+                            this->writeIntData(varAddress);
+                            break;
+                        case TokenDetail::FALSE:
+                            this->outputDumpFile << "PUSH_INT FALSE" << std::endl;
+                            this->outputDumpFile << "STORE_INT " << varAddress << std::endl;
+                            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_INT);
+                            this->writeIntData(0);
+                            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::STORE_INT);
+                            this->writeIntData(varAddress);
+                            break;
+                        default:
+                            break;
+                    }
                     break;
             }
             break;
@@ -204,6 +233,7 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
                     case ASTNodeType::VAR_NAME:
                     case ASTNodeType::INT_LITERAL:
                     case ASTNodeType::STRING_LITERAL:
+                    case ASTNodeType::BOOLEAN_LITERAL:
                         this->storeValue(childNode);
 
                         _childNodes = childNode->getChildren();
@@ -214,7 +244,8 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
                             }
                             else if (_childNode->getType() == ASTNodeType::VAR_NAME ||
                                     _childNode->getType() == ASTNodeType::INT_LITERAL ||
-                                    _childNode->getType() == ASTNodeType::STRING_LITERAL) {
+                                    _childNode->getType() == ASTNodeType::STRING_LITERAL ||
+                                    _childNode->getType() == ASTNodeType::BOOLEAN_LITERAL) {
                                 this->storeValue(_childNode);
                             }
                             else {
@@ -237,6 +268,48 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
         case ASTNodeType::RETURN_STATEMENT:
             this->outputDumpFile << "RETURN" << std::endl;
             this->outputRuntimeFile << static_cast<uint8_t>(OpCode::RETURN);
+            break;
+        case ASTNodeType::IF_STATEMENT:
+            int jumpNextIfInsutructionAddress;
+            int previousJumpIfFalseAddress;
+            int i;
+            int endIfAddress;
+            jumpToEndInsutructionAddress.clear();
+            childNodes = node->getChildren();
+            itr = childNodes.begin();
+            itr_end = childNodes.end();
+
+            i = 0;
+            while (itr != itr_end) {
+                tmpNode = *itr;
+                // EXPRESSION
+                this->codeGen(tmpNode);
+                this->outputDumpFile << "JUMP_IF_FALSE " << jumpNextIfInsutructionAddress << std::endl;
+                this->outputRuntimeFile << static_cast<uint8_t>(OpCode::JUMP_IF_FALSE);
+                if (i > 0) {
+                    this->writeAddress(jumpNextIfInsutructionAddress, previousJumpIfFalseAddress);
+                }
+                previousJumpIfFalseAddress = (int) this->outputRuntimeFile.tellp();
+                this->writeIntData(-1);
+                itr++;
+                tmpNode = *itr;
+                // BLOCK
+                for (SyntaxTreeNode* child : tmpNode->getChildren()) {
+                    this->codeGen(child);
+                }
+                this->outputDumpFile << "JUMP TO ENDBLOCK" << std::endl;
+                this->outputRuntimeFile << static_cast<uint8_t>(OpCode::JUMP);
+                jumpToEndInsutructionAddress.push_back((int) this->outputRuntimeFile.tellp());
+                this->writeIntData(-1);
+                jumpNextIfInsutructionAddress = (int) this->outputRuntimeFile.tellp();
+                itr++;
+                i++;
+            }
+            endIfAddress = (int) this->outputRuntimeFile.tellp();
+            for (int address : jumpToEndInsutructionAddress) {
+                this->writeAddress(endIfAddress, address);
+            }
+            this->writeAddress(endIfAddress, previousJumpIfFalseAddress);
             break;
         default:
             break;
@@ -284,7 +357,20 @@ void CodeGenerator::printInstructions(std::vector<SyntaxTreeNode*> nodes) {
                 }
                 break;
             default:
-                this->codeGen(node->getChildren()[0]);
+                // BOOLEAN_LITERAL
+                if (node->getToken()->getTokenType()->getTokenDetail() == TokenDetail::TRUE) {
+                    this->outputDumpFile << "PUSH_INT TRUE" << std::endl;
+                    this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_INT);
+                    this->writeIntData(1);
+                }
+                else if (node->getToken()->getTokenType()->getTokenDetail() == TokenDetail::FALSE) {
+                    this->outputDumpFile << "PUSH_INT FALSE" << std::endl;
+                    this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_INT);
+                    this->writeIntData(0);
+                }
+                else {
+                    this->codeGen(node->getChildren()[0]);
+                }
                 break;
         }
         this->outputDumpFile << "PRINT" << std::endl;
@@ -322,6 +408,20 @@ void CodeGenerator::storeValue(SyntaxTreeNode* node) {
             }
             break;
         default:
+            switch (node->getToken()->getTokenType()->getTokenDetail()) {
+                case TokenDetail::TRUE:
+                    this->outputDumpFile << "PUSH_INT TRUE" << std::endl;
+                    this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_INT);
+                    this->writeIntData(1);
+                    break;
+                case TokenDetail::FALSE:
+                    this->outputDumpFile << "PUSH_INT FALSE" << std::endl;
+                    this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_INT);
+                    this->writeIntData(0);
+                    break;
+                default:
+                    break;
+            }
             break;
     }
 
@@ -329,10 +429,10 @@ void CodeGenerator::storeValue(SyntaxTreeNode* node) {
 }
 
 void CodeGenerator::writeIntData(int value) {
-    uint8_t byte;
+    int8_t byte;
 
     for (long unsigned int i = 0; i < sizeof(int); i++) {
-        byte = static_cast<uint8_t>(value >> (i * 8));
+        byte = static_cast<int8_t>(value >> (i * 8));
         this->outputRuntimeFile.write(reinterpret_cast<const char*>(&byte), sizeof(byte));
     }
 
@@ -361,9 +461,134 @@ void CodeGenerator::writeOperator(TokenDetail td) {
             this->outputDumpFile << "MOD" << std::endl;
             this->outputRuntimeFile << static_cast<uint8_t>(OpCode::MOD);
             break;
+        case TokenDetail::AND:
+            this->outputDumpFile << "AND" << std::endl;
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::AND);
+            break;
+        case TokenDetail::OR:
+            this->outputDumpFile << "OR" << std::endl;
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::OR);
+            break;
+        case TokenDetail::NOT:
+            this->outputDumpFile << "NOT" << std::endl;
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::NOT);
+            break;
+        case TokenDetail::CMP_EQUAL:
+            this->outputDumpFile << "CMP_EQUAL" << std::endl;
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::CMP_EQUAL);
+            break;
+        case TokenDetail::CMP_NOT_EQUAL:
+            this->outputDumpFile << "CMP_NOT_EQUAL" << std::endl;
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::CMP_NOT_EQUAL);
+            break;
+        case TokenDetail::LEFT_ANGLE_BRACKET:
+            this->outputDumpFile << "CMP_LESS" << std::endl;
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::CMP_LESS);
+            break;
+        case TokenDetail::SMALLER_EQUAL:
+            this->outputDumpFile << "CMP_LESS_EQUAL" << std::endl;
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::CMP_LESS_EQUAL);
+            break;
+        case TokenDetail::RIGHT_ANGLE_BRACKET:
+            this->outputDumpFile << "CMP_GREATER" << std::endl;
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::CMP_GREATER);
+            break;
+        case TokenDetail::LARGER_EQUAL:
+            this->outputDumpFile << "CMP_GREATER_EQUAL" << std::endl;
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::CMP_GREATER_EQUAL);
+            break;
         default:
             break;
     }
+
+    return;
+}
+
+void CodeGenerator::writeAddress(int value, int writeAddress) {
+    this->outputRuntimeFile.seekp(writeAddress);
+    this->writeIntData(value);
+    this->outputRuntimeFile.seekp(0, std::ios::end);
+
+    return;
+}
+
+void CodeGenerator::logOpCodes(void) {
+    std::stringstream ss;
+    this->outputOpCOdeFile << "OpCodes:" << std::endl;
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::PUSH_INT);
+    this->outputOpCOdeFile << ss.str() << ": PUSH_INT" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::PUSH_STRING);
+    this->outputOpCOdeFile << ss.str() << ": PUSH_STRING" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::LOAD_INT);
+    this->outputOpCOdeFile << ss.str() << ": LOAD_INT" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::LOAD_STRING);
+    this->outputOpCOdeFile << ss.str()<< ": LOAD_STRING" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::ADD);
+    this->outputOpCOdeFile << ss.str() << ": ADD" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::SUB);
+    this->outputOpCOdeFile << ss.str() << ": SUB" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::MUL);
+    this->outputOpCOdeFile << ss.str() << ": MUL" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::DIV);
+    this->outputOpCOdeFile << ss.str() << ": DIV" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::MOD);
+    this->outputOpCOdeFile << ss.str() << ": MOD" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::AND);
+    this->outputOpCOdeFile << ss.str() << ": AND" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::OR);
+    this->outputOpCOdeFile << ss.str() << ": OR" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::NOT);
+    this->outputOpCOdeFile << ss.str() << ": NOT" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::CMP_EQUAL);
+    this->outputOpCOdeFile << ss.str() << ": CMP_EQUAL" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::CMP_NOT_EQUAL);
+    this->outputOpCOdeFile << ss.str() << ": CMP_NOT_EQUAL" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::CMP_LESS);
+    this->outputOpCOdeFile << ss.str() << ": CMP_LESS" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::CMP_LESS_EQUAL);
+    this->outputOpCOdeFile << ss.str() << ": CMP_LESS_EQUAL" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::CMP_GREATER);
+    this->outputOpCOdeFile << ss.str() << ": CMP_GREATER" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::CMP_GREATER_EQUAL);
+    this->outputOpCOdeFile << ss.str() << ": CMP_GREATER_EQUAL" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::PRINT);
+    this->outputOpCOdeFile << ss.str() << ": PRINT" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::RETURN);
+    this->outputOpCOdeFile << ss.str() << ": RETURN" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::JUMP);
+    this->outputOpCOdeFile << ss.str() << ": JUMP" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::HALT);
+    this->outputOpCOdeFile << ss.str() << ": HALT" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::LABEL);
+    this->outputOpCOdeFile << ss.str() << ": LABEL" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::CALL);
+    this->outputOpCOdeFile << ss.str() << ": CALL" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::JUMP_IF_FALSE);
+    this->outputOpCOdeFile << ss.str() << ": JUMP_IF_FALSE" << std::endl;
 
     return;
 }

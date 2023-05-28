@@ -59,6 +59,18 @@ std::string TokenType::__str(void) {
         case TokenDetail::DEF_RETURN:
             str += "DEF_RETURN";
             break;
+        case TokenDetail::IF:
+            str += "IF";
+            break;
+        case TokenDetail::ELSE:
+            str += "ELSE";
+            break;
+        case TokenDetail::TRUE:
+            str += "TRUE";
+            break;
+        case TokenDetail::FALSE:
+            str += "FALSE";
+            break;
         case TokenDetail::LEFT_PARENTHESE:
             str += "LEFT_PARENTHESE";
             break;
@@ -86,8 +98,32 @@ std::string TokenType::__str(void) {
         case TokenDetail::MOD:
             str += "MOD";
             break;
+        case TokenDetail::AND:
+            str += "AND";
+            break;
+        case TokenDetail::OR:
+            str += "OR";
+            break;
+        case TokenDetail::NOT:
+            str += "NOT";
+            break;
+        case TokenDetail::CMP_EQUAL:
+            str += "CMP_EQUAL";
+            break;
+        case TokenDetail::CMP_NOT_EQUAL:
+            str += "CMP_NOT_EQUAL";
+            break;
+        case TokenDetail::SMALLER_EQUAL:
+            str += "SMALLER_EQUAL";
+            break;
+        case TokenDetail::LARGER_EQUAL:
+            str += "LARGER_EQUAL";
+            break;
         case TokenDetail::EQUAL:
             str += "EQUAL";
+            break;
+        case TokenDetail::NOT_SYM:
+            str += "NOT_SYM";
             break;
         case TokenDetail::PLUS:
             str += "PLUS";

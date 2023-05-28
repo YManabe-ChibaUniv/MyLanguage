@@ -24,6 +24,7 @@ class SyntaxTreeNode {
         void setParent(SyntaxTreeNode* parent);
         void printTree(int depth);
         std::string __str(void);
+        SyntaxTreeNode* clone(void);
 };
 
 #endif

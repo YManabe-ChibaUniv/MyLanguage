@@ -21,8 +21,8 @@ class RunTime {
         void run(void);
     private:
         std::ifstream runtime_file;
+        std::ofstream runtime_log_file;
         #if DEBUG
-            std::ofstream runtime_log_file;
             std::ofstream disp_log_file;
         #endif
         std::vector<char> runtime;

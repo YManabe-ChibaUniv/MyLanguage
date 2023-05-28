@@ -71,6 +71,9 @@ std::vector<SyntaxTreeNode*> Parser::parseStatement(void) {
                 case TokenDetail::DEF_FUNCTION:
                     nodes.push_back(parseFunctionDefinition());
                     break;
+                case TokenDetail::IF:
+                    nodes.push_back(parseIfStatement());
+                    break;
                 default:
                     this->runError(this->tokens[this->index]);
             }
@@ -102,10 +105,56 @@ std::vector<SyntaxTreeNode*> Parser::parseStatement(void) {
 }
 
 SyntaxTreeNode* Parser::parseExpression(void) {
-    // Expression = Term ((+ | -) Term)*
+    // Expression = Term ((== | != | < | <= | > | >=) Term)*
     SyntaxTreeNode* node = new SyntaxTreeNode(NULL, ASTNodeType::EXPRESSION);
+    SyntaxTreeNode* op, *element, *element2;
+    Token* token;
+    TokenDetail td;
+    int i = 0;
+    element = this->parseElement();
+    node->addChild(element);
+
+    while (true) {
+        td = this->tokens[this->index]->getTokenType()->getTokenDetail();
+        switch (td) {
+            case TokenDetail::CMP_EQUAL:
+            case TokenDetail::CMP_NOT_EQUAL:
+            case TokenDetail::LEFT_ANGLE_BRACKET:
+            case TokenDetail::SMALLER_EQUAL:
+            case TokenDetail::RIGHT_ANGLE_BRACKET:
+            case TokenDetail::LARGER_EQUAL:
+                if (i == 0) {
+                    op = this->parseOperator();
+                    element2 = this->parseElement();
+                    node->addChild(element2);
+                    node->addChild(op);
+                }
+                else {
+                    node->addChild(element->clone());
+                    op = this->parseOperator();
+                    element2 = this->parseElement();
+                    node->addChild(element2);
+                    node->addChild(op);
+                    token = new Token();
+                    token->setTokenType(new TokenType(TokenKind::TK_OPERATOR, TokenDetail::AND));
+                    token->setValue("AND");
+                    node->addChild(new SyntaxTreeNode(token, ASTNodeType::OPERATOR));
+                }
+                element = element2;
+                break;
+            default:
+                return node;
+        }
+        i++;
+    }
+
+    return node;
+}
+
+SyntaxTreeNode* Parser::parseElement(void) {
+    // Element = Term ((+ | -) Term)*
+    SyntaxTreeNode* node = this->parseTerm();
     SyntaxTreeNode* op;
-    node->addChild(this->parseTerm());
 
     while (this->tokens[this->index]->getTokenType()->getTokenDetail() == TokenDetail::PLUS || this->tokens[this->index]->getTokenType()->getTokenDetail() == TokenDetail::MINUS) {
         op = this->parseOperator();
@@ -117,7 +166,7 @@ SyntaxTreeNode* Parser::parseExpression(void) {
 }
 
 SyntaxTreeNode* Parser::parseTerm(void) {
-    // Term = Factor ((* | / | mod) Factor)*
+    // Term = Factor ((* | / | MOD) Factor)*
     SyntaxTreeNode* node = this->parseFactor();
     SyntaxTreeNode* op;
 
@@ -142,6 +191,7 @@ SyntaxTreeNode* Parser::parseFactor(void) {
         node = new SyntaxTreeNode(token, ASTNodeType::INT_LITERAL);
         this->index++;
     }
+    // STRING LITERAL
     else if (tk == TokenKind::TK_STRING) {
         node = new SyntaxTreeNode(token, ASTNodeType::STRING_LITERAL);
         this->index++;
@@ -175,29 +225,28 @@ SyntaxTreeNode* Parser::parseOperator(void) {
     SyntaxTreeNode* node = nullptr;
     Token* token = this->tokens[this->index];
     TokenDetail td = token->getTokenType()->getTokenDetail();
-    if (td == TokenDetail::PLUS || td == TokenDetail::MINUS || td == TokenDetail::TIMES || td == TokenDetail::DIVISION || td == TokenDetail::MOD) {
-        node = new SyntaxTreeNode(token, ASTNodeType::OPERATOR);
-        this->index++;
-    } else {
-        this->runError(this->tokens[this->index]);
+    switch (td) {
+        case TokenDetail::PLUS:
+        case TokenDetail::MINUS:
+        case TokenDetail::TIMES:
+        case TokenDetail::DIVISION:
+        case TokenDetail::MOD:
+        case TokenDetail::CMP_EQUAL:
+        case TokenDetail::CMP_NOT_EQUAL:
+        case TokenDetail::LEFT_ANGLE_BRACKET:
+        case TokenDetail::SMALLER_EQUAL:
+        case TokenDetail::RIGHT_ANGLE_BRACKET:
+        case TokenDetail::LARGER_EQUAL:
+            node = new SyntaxTreeNode(token, ASTNodeType::OPERATOR);
+            this->index++;
+            break;
+        default:
+            this->runError(this->tokens[this->index]);
+            break;
     }
-    return node;
-}
 
-/*
-SyntaxTreeNode* Parser::parseVariable(void) {
-    SyntaxTreeNode* node = nullptr;
-    Token* token = this->tokens[this->index];
-    TokenKind tk = token->getTokenType()->getTokenKind();
-    if (tk == TokenKind::TK_IDENT) {
-        node = new SyntaxTreeNode(token, ASTNodeType::VAR);
-        this->index++;
-    } else {
-        this->runError(this->tokens[this->index]);
-    }
     return node;
 }
-*/
 
 SyntaxTreeNode* Parser::parseReturnStatement(void) {
     SyntaxTreeNode* node = new SyntaxTreeNode(NULL, ASTNodeType::RETURN_STATEMENT);
@@ -431,6 +480,181 @@ SyntaxTreeNode* Parser::parseArgumentList(void) {
         if (this->tokens[this->index]->getTokenType()->getTokenDetail() == TokenDetail::COMMA) {
             this->index++;
         }
+    }
+
+    return node;
+}
+
+SyntaxTreeNode* Parser::parseIfStatement(void) {
+    SyntaxTreeNode* node = new SyntaxTreeNode(NULL, ASTNodeType::IF_STATEMENT);
+    Token* trueToken;
+    SyntaxTreeNode* elseExpression;
+    // if (IF)
+    if (this->tokens[this->index]->getTokenType()->getTokenDetail() != TokenDetail::IF) {
+        this->runError(this->tokens[this->index]);
+    }
+    this->index++;
+    // ( (LEFT_PARENTHESE)
+    if (this->tokens[this->index]->getTokenType()->getTokenDetail() != TokenDetail::LEFT_PARENTHESE) {
+        this->runError(this->tokens[this->index]);
+    }
+    this->index++;
+    // IFExpression
+    node->addChild(this->parseIfExpression());
+    // ) (RIGHT_PARENTHESE)
+    if (this->tokens[this->index]->getTokenType()->getTokenDetail() != TokenDetail::RIGHT_PARENTHESE) {
+        this->runError(this->tokens[this->index]);
+    }
+    this->index++;
+    // { (LEFT_BRACKET)
+    if (this->tokens[this->index]->getTokenType()->getTokenDetail() != TokenDetail::LEFT_BRACKET) {
+        this->runError(this->tokens[this->index]);
+    }
+    // goto BLOCK
+    node->addChild(this->parseBlockStatement());
+    // } (RIGHT_BRACKET)
+    if (this->tokens[this->index]->getTokenType()->getTokenDetail() != TokenDetail::RIGHT_BRACKET) {
+        this->runError(this->tokens[this->index]);
+    }
+    this->index++;
+    // else (ELSE)
+    while (this->tokens[this->index]->getTokenType()->getTokenDetail() == TokenDetail::ELSE) {
+        this->index++;
+        // if (IF)
+        if (this->tokens[this->index]->getTokenType()->getTokenDetail() == TokenDetail::IF) {
+            this->index++;
+            // ( (LEFT_PARENTHESE)
+            if (this->tokens[this->index]->getTokenType()->getTokenDetail() != TokenDetail::LEFT_PARENTHESE) {
+                this->runError(this->tokens[this->index]);
+            }
+            this->index++;
+            // IFExpression
+            node->addChild(this->parseIfExpression());
+            // ) (RIGHT_PARENTHESE)
+            if (this->tokens[this->index]->getTokenType()->getTokenDetail() != TokenDetail::RIGHT_PARENTHESE) {
+                this->runError(this->tokens[this->index]);
+            }
+            this->index++;
+            // { (LEFT_BRACKET)
+            if (this->tokens[this->index]->getTokenType()->getTokenDetail() != TokenDetail::LEFT_BRACKET) {
+                this->runError(this->tokens[this->index]);
+            }
+            // goto BLOCK
+            node->addChild(this->parseBlockStatement());
+            // } (RIGHT_BRACKET)
+            if (this->tokens[this->index]->getTokenType()->getTokenDetail() != TokenDetail::RIGHT_BRACKET) {
+                this->runError(this->tokens[this->index]);
+            }
+            this->index++;
+        } else {
+            elseExpression = new SyntaxTreeNode(NULL, ASTNodeType::EXPRESSION);
+            trueToken = new Token();
+            trueToken->setTokenType(new TokenType(TokenKind::TK_KEYWORD, TokenDetail::TRUE));
+            trueToken->setValue("TRUE");
+            elseExpression->addChild(new SyntaxTreeNode(trueToken, ASTNodeType::BOOLEAN_LITERAL));
+            node->addChild(elseExpression);
+            // { (LEFT_BRACKET)
+            if (this->tokens[this->index]->getTokenType()->getTokenDetail() != TokenDetail::LEFT_BRACKET) {
+                this->runError(this->tokens[this->index]);
+            }
+            // goto BLOCK
+            node->addChild(this->parseBlockStatement());
+            // } (RIGHT_BRACKET)
+            if (this->tokens[this->index]->getTokenType()->getTokenDetail() != TokenDetail::RIGHT_BRACKET) {
+                this->runError(this->tokens[this->index]);
+            }
+            this->index++;
+            break;
+        }
+    }
+
+    return node;
+}
+
+SyntaxTreeNode* Parser::parseIfExpression(void) {
+    // Expression = Term (OR Term)*
+    SyntaxTreeNode* node = new SyntaxTreeNode(NULL, ASTNodeType::EXPRESSION);
+    SyntaxTreeNode* op;
+
+    node->addChild(this->parseIfTerm());
+    while (this->tokens[this->index]->getTokenType()->getTokenDetail() == TokenDetail::OR) {
+        op = this->parseIfOperator();
+        node->addChild(this->parseIfTerm());
+        node->addChild(op);
+    }
+
+    return node;
+}
+
+SyntaxTreeNode* Parser::parseIfTerm(void) {
+    // Term = Factor (AND Factor)*
+    SyntaxTreeNode* node = this->parseIfFactor();
+    SyntaxTreeNode* op;
+
+    while (this->tokens[this->index]->getTokenType()->getTokenDetail() == TokenDetail::AND) {
+        op = this->parseIfOperator();
+        node->addChild(this->parseIfFactor());
+        node->addChild(op);
+    }
+
+    return node;
+}
+
+SyntaxTreeNode* Parser::parseIfFactor(void) {
+    // Factor = (NOT)? (TRUE | FALSE | (IFExpression) | Expression)
+    SyntaxTreeNode* node = nullptr;
+    SyntaxTreeNode* notNode = nullptr;
+    Token* token = this->tokens[this->index];
+    TokenDetail td = token->getTokenType()->getTokenDetail();
+
+    // (NOT)?
+    if (td == TokenDetail::NOT) {
+        notNode = new SyntaxTreeNode(token, ASTNodeType::OPERATOR);
+        this->index++;
+    }
+    token = this->tokens[this->index];
+    td = token->getTokenType()->getTokenDetail();
+    // TRUE | FALSE
+    if (td == TokenDetail::TRUE || td == TokenDetail::FALSE) {
+        node = new SyntaxTreeNode(token, ASTNodeType::BOOLEAN_LITERAL);
+        this->index++;
+    }
+    // ( IFExpression )
+    else if (td == TokenDetail::LEFT_PARENTHESE) {
+        this->index++;
+        node = this->parseIfExpression();
+        // ) (RIGHT_PARENTHESE)
+        if (this->tokens[this->index]->getTokenType()->getTokenDetail() != TokenDetail::RIGHT_PARENTHESE) {
+            this->runError(this->tokens[this->index]);
+        }
+        this->index++;
+    }
+    // Expression
+    else {
+        node = this->parseExpression();
+    }
+
+    if (notNode != nullptr) {
+        node->addChild(notNode);
+    }
+
+    return node;
+}
+
+SyntaxTreeNode* Parser::parseIfOperator(void) {
+    SyntaxTreeNode* node = nullptr;
+    Token* token = this->tokens[this->index];
+    TokenDetail td = token->getTokenType()->getTokenDetail();
+    switch (td) {
+        case TokenDetail::AND:
+        case TokenDetail::OR:
+        case TokenDetail::NOT:
+            node = new SyntaxTreeNode(token, ASTNodeType::OPERATOR);
+            this->index++;
+            break;
+        default:
+            this->runError(this->tokens[this->index]);
+            break;
     }
 
     return node;
