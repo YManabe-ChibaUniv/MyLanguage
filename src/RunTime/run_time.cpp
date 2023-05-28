@@ -457,7 +457,7 @@ void RunTime::run(void) {
                     this->runtime_iterator = this->runtime_begin + function_address;
                 }
                 #if DEBUG
-                    this->runtime_log_file << "JUMP: " << function_address << std::endl;
+                    this->runtime_log_file << "JUMP_IF_FALSE: " << function_address << std::endl;
                     this->logStackAndMap();
                 #endif
                 delete var1;

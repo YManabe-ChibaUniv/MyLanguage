@@ -71,6 +71,15 @@ std::string TokenType::__str(void) {
         case TokenDetail::FALSE:
             str += "FALSE";
             break;
+        case TokenDetail::WHILE:
+            str += "WHILE";
+            break;
+        case TokenDetail::BREAK:
+            str += "BREAK";
+            break;
+        case TokenDetail::CONTINUE:
+            str += "CONTINUE";
+            break;
         case TokenDetail::LEFT_PARENTHESE:
             str += "LEFT_PARENTHESE";
             break;

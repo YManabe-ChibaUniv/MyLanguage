@@ -43,6 +43,9 @@ void ReservedKeywords::setTokenKeywords(void) {
     this->keywords.emplace(TokenDetail::ELSE, "else");
     this->keywords.emplace(TokenDetail::TRUE, "TRUE");
     this->keywords.emplace(TokenDetail::FALSE, "FALSE");
+    this->keywords.emplace(TokenDetail::WHILE, "while");
+    this->keywords.emplace(TokenDetail::BREAK, "break");
+    this->keywords.emplace(TokenDetail::CONTINUE, "continue");
     return;
 }
 

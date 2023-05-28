@@ -42,6 +42,7 @@ class Parser {
         SyntaxTreeNode* parseIfTerm(void);
         SyntaxTreeNode* parseIfFactor(void);
         SyntaxTreeNode* parseIfOperator(void);
+        SyntaxTreeNode* parseWhileStatement(void);
         void runError(Token* token, const std::experimental::fundamentals_v2::source_location& location = std::experimental::fundamentals_v2::source_location::current());
     public:
         Parser(std::vector<Token*> tokens);

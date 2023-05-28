@@ -12,6 +12,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <time.h>
 
 int main() {
     #if DEBUG
@@ -81,8 +82,11 @@ int main() {
         #if DEBUG
             std::cout << "RunTime start" << std::endl;
         #endif
+        clock_t start = clock();
         RunTime* rt = new RunTime(OUTPUT_RUNTIME_FILE);
         rt->run();
+        clock_t end = clock();
+        std::cout << "RunTime: " << (double)(end - start) / CLOCKS_PER_SEC / 10 << "s" << std::endl;
         delete rt;
         #if DEBUG
             std::cout << "RunTime end" << std::endl;

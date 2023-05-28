@@ -25,13 +25,13 @@ CodeGenerator::~CodeGenerator() {
 }
 
 void CodeGenerator::run(void) {
-    this->codeGen(this->root->getRoot());
+    this->codeGen(this->root->getRoot(), 0);
     this->writeAddress((int) this->mainFunctionAddress, this->mainCallAddress);
 
     return;
 }
 
-void CodeGenerator::codeGen(SyntaxTreeNode* node) {
+void CodeGenerator::codeGen(SyntaxTreeNode* node, int whileDepth) {
     SyntaxTreeNode* tmpNode;
     std::vector<SyntaxTreeNode*>::iterator itr;
     std::vector<SyntaxTreeNode*>::iterator itr_end;
@@ -45,7 +45,7 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
     switch (node->getType()) {
         case ASTNodeType::PROGRAM:
             for (SyntaxTreeNode* child : node->getChildren()) {
-                this->codeGen(child);
+                this->codeGen(child, whileDepth);
             }
             // TODO: FUNCTION_CALL mainのアドレスに飛ばす
             break;
@@ -72,7 +72,7 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
             // BLOCK
             tmpNode = *itr;
             for (SyntaxTreeNode* child : tmpNode->getChildren()) {
-                this->codeGen(child);
+                this->codeGen(child, whileDepth);
             }
             break;
         case ASTNodeType::VAR_DEFINITION:
@@ -105,7 +105,7 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
             tmpNode = *itr;
             // EXPRESSION
             if (tmpNode->getType() == ASTNodeType::EXPRESSION) {
-                this->codeGen(tmpNode);
+                this->codeGen(tmpNode, whileDepth);
                 switch (this->varTable->getType(varAddress)) {
                         case TokenDetail::DEF_INT32:
                             this->outputDumpFile << "STORE_INT " << varAddress << std::endl;
@@ -201,12 +201,12 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
             // print
             if (tmpNode->getToken()->getValue() == "print") {
                 tmpNode = *itr;
-                this->printInstructions(tmpNode->getChildren());
+                this->printInstructions(tmpNode->getChildren(), whileDepth);
             }
             // println
             else if (tmpNode->getToken()->getValue() == "println") {
                 tmpNode = *itr;
-                this->printInstructions(tmpNode->getChildren());
+                this->printInstructions(tmpNode->getChildren(), whileDepth);
                 this->outputDumpFile << "PUSH_STRING " << 1 << " \\n" << std::endl;
                 this->outputDumpFile << "PRINT" << std::endl;
                 this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PUSH_STRING);
@@ -249,7 +249,7 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
                                 this->storeValue(_childNode);
                             }
                             else {
-                                this->codeGen(_childNode);
+                                this->codeGen(_childNode, whileDepth);
                             }
                         }
                         break;
@@ -258,7 +258,7 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
                         this->writeOperator(td);
                         break;
                     case ASTNodeType::EXPRESSION:
-                        this->codeGen(childNode);
+                        this->codeGen(childNode, whileDepth);
                         break;
                     default:
                         break;
@@ -283,7 +283,7 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
             while (itr != itr_end) {
                 tmpNode = *itr;
                 // EXPRESSION
-                this->codeGen(tmpNode);
+                this->codeGen(tmpNode, whileDepth);
                 this->outputDumpFile << "JUMP_IF_FALSE " << jumpNextIfInsutructionAddress << std::endl;
                 this->outputRuntimeFile << static_cast<uint8_t>(OpCode::JUMP_IF_FALSE);
                 if (i > 0) {
@@ -295,7 +295,7 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
                 tmpNode = *itr;
                 // BLOCK
                 for (SyntaxTreeNode* child : tmpNode->getChildren()) {
-                    this->codeGen(child);
+                    this->codeGen(child, whileDepth);
                 }
                 this->outputDumpFile << "JUMP TO ENDBLOCK" << std::endl;
                 this->outputRuntimeFile << static_cast<uint8_t>(OpCode::JUMP);
@@ -311,16 +311,69 @@ void CodeGenerator::codeGen(SyntaxTreeNode* node) {
             }
             this->writeAddress(endIfAddress, previousJumpIfFalseAddress);
             break;
+        case ASTNodeType::WHILE_STATEMENT:
+            int jumpWhileExitAddress;
+            int jumpContinueWhileInsutructionAddress;
+            int callJumpToWhileExitAddress;
+            jumpToEndInsutructionAddress.clear();
+            childNodes = node->getChildren();
+            itr = childNodes.begin();
+            itr_end = childNodes.end();
+
+            tmpNode = *itr;
+            // EXPRESSION
+            jumpContinueWhileInsutructionAddress = (int) this->outputRuntimeFile.tellp();
+            this->codeGen(tmpNode, whileDepth);
+            this->outputDumpFile << "JUMP_IF_FALSE TO ENDBLOCK" << std::endl;
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::JUMP_IF_FALSE);
+            callJumpToWhileExitAddress = (int) this->outputRuntimeFile.tellp();
+            this->writeIntData(-1);
+            itr++;
+            tmpNode = *itr;
+            // BLOCK
+            for (SyntaxTreeNode* child : tmpNode->getChildren()) {
+                this->codeGen(child, whileDepth + 1);
+            }
+            this->outputDumpFile << "JUMP TO EXPRESSION" << std::endl;
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::JUMP);
+            // set jump to while expression address
+            this->writeAddress(jumpContinueWhileInsutructionAddress, (int) this->outputRuntimeFile.tellp());
+            // set jump to while exit address
+            jumpWhileExitAddress = (int) this->outputRuntimeFile.tellp();
+            this->writeAddress(jumpWhileExitAddress, callJumpToWhileExitAddress);
+            // set break address
+            for (int address : this->whileBreakAddressStack[whileDepth + 1]) {
+                this->writeAddress(jumpWhileExitAddress, address);
+            }
+            this->whileBreakAddressStack[whileDepth + 1].clear();
+            // set continue address
+            for (int address : this->whileContinueAddressStack[whileDepth + 1]) {
+                this->writeAddress(jumpContinueWhileInsutructionAddress, address);
+            }
+            this->whileContinueAddressStack[whileDepth + 1].clear();
+            break;
+        case ASTNodeType::BREAK:
+            this->outputDumpFile << "JUMP TO ENDBLOCK" << std::endl;
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::JUMP);
+            this->whileBreakAddressStack[whileDepth].push_back((int) this->outputRuntimeFile.tellp());
+            this->writeIntData(-1);
+            break;
+        case ASTNodeType::CONTINUE:
+            this->outputDumpFile << "JUMP TO EXPRESSION" << std::endl;
+            this->outputRuntimeFile << static_cast<uint8_t>(OpCode::JUMP);
+            this->whileContinueAddressStack[whileDepth].push_back((int) this->outputRuntimeFile.tellp());
+            this->writeIntData(-1);
+            break;
         default:
             break;
     }
 }
 
-void CodeGenerator::printInstructions(std::vector<SyntaxTreeNode*> nodes) {
+void CodeGenerator::printInstructions(std::vector<SyntaxTreeNode*> nodes, int whileDepth) {
     for (SyntaxTreeNode* node : nodes) {
         // EXPRESSION
         if (node->getToken() == NULL) {
-            this->codeGen(node);
+            this->codeGen(node, whileDepth);
             this->outputDumpFile << "PRINT" << std::endl;
             this->outputRuntimeFile << static_cast<uint8_t>(OpCode::PRINT);
             continue;
@@ -369,7 +422,7 @@ void CodeGenerator::printInstructions(std::vector<SyntaxTreeNode*> nodes) {
                     this->writeIntData(0);
                 }
                 else {
-                    this->codeGen(node->getChildren()[0]);
+                    this->codeGen(node->getChildren()[0], whileDepth);
                 }
                 break;
         }
@@ -526,6 +579,12 @@ void CodeGenerator::logOpCodes(void) {
     ss.str("");
     ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::LOAD_STRING);
     this->outputOpCOdeFile << ss.str()<< ": LOAD_STRING" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::STORE_INT);
+    this->outputOpCOdeFile << ss.str() << ": STORE_INT" << std::endl;
+    ss.str("");
+    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::STORE_STRING);
+    this->outputOpCOdeFile << ss.str()<< ": STORE_STRING" << std::endl;
     ss.str("");
     ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(OpCode::ADD);
     this->outputOpCOdeFile << ss.str() << ": ADD" << std::endl;

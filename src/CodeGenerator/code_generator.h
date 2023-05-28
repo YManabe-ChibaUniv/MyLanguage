@@ -16,6 +16,7 @@
 #include <stack>
 #include <sstream>
 #include <iomanip>
+#include <map>
 
 class CodeGenerator {
     public:
@@ -32,8 +33,10 @@ class CodeGenerator {
         FunctionTable* functionTable;
         std::streampos mainFunctionAddress;
         std::streampos mainCallAddress;
-        void codeGen(SyntaxTreeNode* node);
-        void printInstructions(std::vector<SyntaxTreeNode*> nodes);
+        std::map<int, std::vector<int>> whileBreakAddressStack;
+        std::map<int, std::vector<int>> whileContinueAddressStack;
+        void codeGen(SyntaxTreeNode* node, int whileDepth);
+        void printInstructions(std::vector<SyntaxTreeNode*> nodes, int whileDepth);
         void storeValue(SyntaxTreeNode* node);
         void writeIntData(int value);
         void writeOperator(TokenDetail td);

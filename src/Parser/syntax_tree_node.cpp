@@ -129,6 +129,15 @@ std::string SyntaxTreeNode::__str(void) {
         case ASTNodeType::IF_STATEMENT:
             return "IF_STATEMENT";
             break;
+        case ASTNodeType::WHILE_STATEMENT:
+            return "WHILE_STATEMENT";
+            break;
+        case ASTNodeType::BREAK:
+            return "BREAK";
+            break;
+        case ASTNodeType::CONTINUE:
+            return "CONTINUE";
+            break;
     }
     return "UNKNOWN";
 }
