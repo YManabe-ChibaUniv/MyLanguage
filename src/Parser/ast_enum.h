@@ -22,6 +22,9 @@ enum class ASTNodeType : int {
     RETURN_LIST,
     RETURN_TYPE,
     IF_STATEMENT,
+    WHILE_STATEMENT,
+    BREAK,
+    CONTINUE,
 };
 
 #endif

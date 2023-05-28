@@ -74,6 +74,17 @@ std::vector<SyntaxTreeNode*> Parser::parseStatement(void) {
                 case TokenDetail::IF:
                     nodes.push_back(parseIfStatement());
                     break;
+                case TokenDetail::WHILE:
+                    nodes.push_back(parseWhileStatement());
+                    break;
+                case TokenDetail::BREAK:
+                    this->index++;
+                    nodes.push_back(new SyntaxTreeNode(NULL, ASTNodeType::BREAK));
+                    break;
+                case TokenDetail::CONTINUE:
+                    this->index++;
+                    nodes.push_back(new SyntaxTreeNode(NULL, ASTNodeType::CONTINUE));
+                    break;
                 default:
                     this->runError(this->tokens[this->index]);
             }
@@ -656,6 +667,38 @@ SyntaxTreeNode* Parser::parseIfOperator(void) {
             this->runError(this->tokens[this->index]);
             break;
     }
+
+    return node;
+}
+
+SyntaxTreeNode* Parser::parseWhileStatement(void) {
+    // WhileStatement = WHILE ( (LEFT_PARENTHESE) Expression (RIGHT_PARENTHESE) ) (LEFT_BRACKET) BlockStatement (RIGHT_BRACKET)
+    SyntaxTreeNode* node = new SyntaxTreeNode(this->tokens[this->index], ASTNodeType::WHILE_STATEMENT);
+
+    this->index++;
+    // ( (LEFT_PARENTHESE)
+    if (this->tokens[this->index]->getTokenType()->getTokenDetail() != TokenDetail::LEFT_PARENTHESE) {
+        this->runError(this->tokens[this->index]);
+    }
+    this->index++;
+    // Expression
+    node->addChild(this->parseIfExpression());
+    // ) (RIGHT_PARENTHESE)
+    if (this->tokens[this->index]->getTokenType()->getTokenDetail() != TokenDetail::RIGHT_PARENTHESE) {
+        this->runError(this->tokens[this->index]);
+    }
+    this->index++;
+    // { (LEFT_BRACKET)
+    if (this->tokens[this->index]->getTokenType()->getTokenDetail() != TokenDetail::LEFT_BRACKET) {
+        this->runError(this->tokens[this->index]);
+    }
+    // goto BLOCK
+    node->addChild(this->parseBlockStatement());
+    // } (RIGHT_BRACKET)
+    if (this->tokens[this->index]->getTokenType()->getTokenDetail() != TokenDetail::RIGHT_BRACKET) {
+        this->runError(this->tokens[this->index]);
+    }
+    this->index++;
 
     return node;
 }

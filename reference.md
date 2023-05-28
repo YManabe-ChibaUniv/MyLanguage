@@ -4,3 +4,9 @@ gdb 操作：https://www.tohoho-web.com/ex/draft/gdb.htm
 enum：https://kenkyu-note.hatenablog.com/entry/2020/07/06/195821
 全体：http://web.sfc.keio.ac.jp/~hagino/sa15/05-handout.pdf
 コードリスト：https://www.fit.ac.jp/~m-ishihara/Lectures/H22/Compiler/12/Handout.pdf
+
+
+### 結果 10000までの素数の計算
+- MyLanguage: 1.03998s
+- C++ (O3): 0.014539s
+- Python: 0.481736s

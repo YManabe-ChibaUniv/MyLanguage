@@ -27,6 +27,9 @@ enum class TokenDetail : int {
     ELSE,                   // else
     TRUE,                   // TRUE
     FALSE,                  // FALSE
+    WHILE,                  // while
+    BREAK,                  // break
+    CONTINUE,               // continue
 
     // punctuators
     LEFT_PARENTHESE,        // (
