@@ -3,3 +3,9 @@ obj/*
 gdb_memo.txt
 core
 runtime_log.txt
+dump/code.txt
+dump/disp_log.txt
+dump/runtime
+dump/runtime_log.txt
+dump/syntax_tree.txt
+dump/tokens.txt
