@@ -15,64 +15,27 @@ PROGRAM
  |    |    |-- VAR_DEFINITION
  |    |    |    |-- VAR_TYPE : int32
  |    |    |    |-- VAR_NAME : j
- |    |    |-- VAR_DEFINITION
- |    |    |    |-- VAR_TYPE : int32
- |    |    |    |-- VAR_NAME : flag
  |    |    |-- ASSIGNMENT_EXPRESSION
  |    |    |    |-- VAR_NAME : i
  |    |    |    |-- EXPRESSION
- |    |    |    |    |-- INT_LITERAL : 2
+ |    |    |    |    |-- INT_LITERAL : -100
  |    |    |-- ASSIGNMENT_EXPRESSION
  |    |    |    |-- VAR_NAME : j
  |    |    |    |-- EXPRESSION
- |    |    |    |    |-- INT_LITERAL : 2
+ |    |    |    |    |-- INT_LITERAL : 100
  |    |    |-- WHILE_STATEMENT : while
  |    |    |    |-- EXPRESSION
  |    |    |    |    |-- EXPRESSION
  |    |    |    |    |    |-- VAR_NAME : i
- |    |    |    |    |    |-- INT_LITERAL : 1000
+ |    |    |    |    |    |-- VAR_NAME : j
  |    |    |    |    |    |-- OPERATOR : <
  |    |    |    |-- BLOCK
- |    |    |    |    |-- ASSIGNMENT_EXPRESSION
- |    |    |    |    |    |-- VAR_NAME : flag
- |    |    |    |    |    |-- EXPRESSION
- |    |    |    |    |    |    |-- INT_LITERAL : 0
- |    |    |    |    |-- ASSIGNMENT_EXPRESSION
- |    |    |    |    |    |-- VAR_NAME : j
- |    |    |    |    |    |-- EXPRESSION
- |    |    |    |    |    |    |-- INT_LITERAL : 2
- |    |    |    |    |-- WHILE_STATEMENT : while
- |    |    |    |    |    |-- EXPRESSION
- |    |    |    |    |    |    |-- EXPRESSION
- |    |    |    |    |    |    |    |-- VAR_NAME : j
- |    |    |    |    |    |    |    |-- VAR_NAME : i
- |    |    |    |    |    |    |    |-- OPERATOR : <
- |    |    |    |    |    |-- BLOCK
- |    |    |    |    |    |    |-- IF_STATEMENT
- |    |    |    |    |    |    |    |-- EXPRESSION
- |    |    |    |    |    |    |    |    |-- EXPRESSION
- |    |    |    |    |    |    |    |    |    |-- VAR_NAME : i
- |    |    |    |    |    |    |    |    |    |    |-- VAR_NAME : j
- |    |    |    |    |    |    |    |    |    |    |-- OPERATOR : MOD
- |    |    |    |    |    |    |    |    |    |-- INT_LITERAL : 0
- |    |    |    |    |    |    |    |    |    |-- OPERATOR : ==
- |    |    |    |    |    |    |    |-- BLOCK
- |    |    |    |    |    |    |    |    |-- ASSIGNMENT_EXPRESSION
- |    |    |    |    |    |    |    |    |    |-- VAR_NAME : flag
- |    |    |    |    |    |    |    |    |    |-- EXPRESSION
- |    |    |    |    |    |    |    |    |    |    |-- INT_LITERAL : 1
- |    |    |    |    |    |    |    |    |-- BREAK
- |    |    |    |    |    |    |-- ASSIGNMENT_EXPRESSION
- |    |    |    |    |    |    |    |-- VAR_NAME : j
- |    |    |    |    |    |    |    |-- EXPRESSION
- |    |    |    |    |    |    |    |    |-- VAR_NAME : j
- |    |    |    |    |    |    |    |    |    |-- INT_LITERAL : 1
- |    |    |    |    |    |    |    |    |    |-- OPERATOR : +
- |    |    |    |    |    |    |-- CONTINUE
  |    |    |    |    |-- IF_STATEMENT
  |    |    |    |    |    |-- EXPRESSION
  |    |    |    |    |    |    |-- EXPRESSION
- |    |    |    |    |    |    |    |-- VAR_NAME : flag
+ |    |    |    |    |    |    |    |-- VAR_NAME : i
+ |    |    |    |    |    |    |    |    |-- INT_LITERAL : 10
+ |    |    |    |    |    |    |    |    |-- OPERATOR : MOD
  |    |    |    |    |    |    |    |-- INT_LITERAL : 0
  |    |    |    |    |    |    |    |-- OPERATOR : ==
  |    |    |    |    |    |-- BLOCK
@@ -87,4 +50,3 @@ PROGRAM
  |    |    |    |    |    |    |-- VAR_NAME : i
  |    |    |    |    |    |    |    |-- INT_LITERAL : 1
  |    |    |    |    |    |    |    |-- OPERATOR : +
- |    |    |-- RETURN_STATEMENT

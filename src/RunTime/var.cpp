@@ -1,5 +1,9 @@
 #include "var.h"
 
+Var::Var(void) {
+
+}
+
 Var::Var(int intValue) {
     this->intValue = intValue;
     this->type = 1;
@@ -24,10 +28,12 @@ std::string Var::getStringValue(void) {
 
 void Var::setIntValue(int intValue) {
     this->intValue = intValue;
+    this->type = 1;
 }
 
 void Var::setStringValue(std::string stringValue) {
     this->stringValue = stringValue;
+    this->type = 2;
 }
 
 int Var::getType(void) {

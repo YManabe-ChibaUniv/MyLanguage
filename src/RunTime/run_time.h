@@ -5,6 +5,8 @@
 #include "var.h"
 #include "../debug.h"
 #include "../config.h"
+#include "var_stack.h"
+#include "call_stack.h"
 
 #include <fstream>
 #include <iostream>
@@ -25,13 +27,13 @@ class RunTime {
         #if DEBUG
             std::ofstream disp_log_file;
         #endif
-        std::vector<char> runtime;
-        std::vector<char>::iterator runtime_iterator;
-        std::vector<char>::iterator runtime_begin;
-        std::vector<char>::iterator runtime_end;
-        std::stack<Var*> stack;
-        std::map<int, Var*> vars;
-        std::stack<int> call_stack;
+        char runtime[RUNTIME_FILE_SIZE];
+        int runtime_iterator;
+        int runtime_begin;
+        int runtime_end;
+        VarStack stack;
+        std::map<int, Var> vars;
+        CallStack call_stack;
         int readIntValueByIterator(void);
         std::string readStringValueByIterator(int size);
         void logStackAndMap(void);

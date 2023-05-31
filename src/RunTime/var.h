@@ -10,6 +10,7 @@ class Var {
         std::string stringValue;
         int type;
     public:
+        Var(void);
         Var(int intValue);
         Var(std::string stringValue);
         ~Var();

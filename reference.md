@@ -7,6 +7,9 @@
 
 
 ### 結果 10000までの素数の計算
-- MyLanguage: 1.03998s
+- MyLanguage
+  - vector<char> (runtime_file): 1.03998s
+  - char[] (runtime_file): 0.825894s
+  - static stack (std::stack<Var*> -> VarStack): 0.624698s
 - C++ (O3): 0.014539s
-- Python: 0.481736s
+- Python: 0.521736s

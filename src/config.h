@@ -6,6 +6,10 @@
 #define ENABLE_CODE_GENERATION true
 #define ENABLE_RUNTIME true
 
+#define RUNTIME_FILE_SIZE 1000000
+#define STACK_SIZE 20
+#define CALL_STACK_SIZE 20
+
 #define INPUT_SOURCE_FILE "source.m"
 #define OUTPUT_DUMP_FILE "dump/code.txt"
 #define OUTPUT_RUNTIME_FILE "dump/runtime"
