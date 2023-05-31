@@ -3,7 +3,7 @@ function main(void) -> void {
     i = -100;
     j = 100;
     while (i < j) {
-        if (i MOD 10 == 0) {
+        if (/* comment */i / 10 > 0 AND i MOD 10 == 0) {
             println(i);
         }
         i = i + 1;
