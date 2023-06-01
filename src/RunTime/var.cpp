@@ -9,6 +9,11 @@ Var::Var(int intValue) {
     this->type = 1;
 }
 
+Var::Var(float floatValue) {
+    this->floatValue = floatValue;
+    this->type = 3;
+}
+
 Var::Var(std::string stringValue) {
     this->stringValue = stringValue;
     this->type = 2;
@@ -22,6 +27,10 @@ int Var::getIntValue(void) {
     return this->intValue;
 }
 
+float Var::getFloatValue(void) {
+    return this->floatValue;
+}
+
 std::string Var::getStringValue(void) {
     return this->stringValue;
 }
@@ -29,6 +38,11 @@ std::string Var::getStringValue(void) {
 void Var::setIntValue(int intValue) {
     this->intValue = intValue;
     this->type = 1;
+}
+
+void Var::setFloatValue(float floatValue) {
+    this->floatValue = floatValue;
+    this->type = 3;
 }
 
 void Var::setStringValue(std::string stringValue) {
@@ -46,6 +60,9 @@ std::string Var::__str(void) {
     }
     else if (this->type == 2) {
         return this->stringValue;
+    }
+    else if (this->type == 3) {
+        return std::to_string(this->floatValue);
     }
 
     return "";

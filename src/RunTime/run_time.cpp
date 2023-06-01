@@ -1,9 +1,5 @@
 #include "run_time.h"
 
-#define INT32_SIZE 4
-#define STR_SIZE 4
-#define LONG_SIZE 8
-
 RunTime::RunTime(std::string runtime_file_name) {
     this->runtime_file.open(runtime_file_name, std::ios::in | std::ios::binary);
     if (!runtime_file.is_open()) {
@@ -40,6 +36,7 @@ void RunTime::run(void) {
     uint8_t op_code;
     uint8_t str_size;
     int int32_value;
+    float float32_value;
     std::string str_value;
     int var_address;
     int function_address;
@@ -57,6 +54,15 @@ void RunTime::run(void) {
                 this->stack.push(int32_value);
                 #if DEBUG
                     this->runtime_log_file << "PUSH_INT: " << int32_value << std::endl;
+                    this->logStackAndMap();
+                #endif
+                break;
+            case OpCode::PUSH_FLOAT:
+                // float value
+                float32_value = this->readFloatValueByIterator();
+                this->stack.push(float32_value);
+                #if DEBUG
+                    this->runtime_log_file << "PUSH_FLOAT: " << float32_value << std::endl;
                     this->logStackAndMap();
                 #endif
                 break;
@@ -80,6 +86,15 @@ void RunTime::run(void) {
                     this->logStackAndMap();
                 #endif
                 break;
+            case OpCode::LOAD_FLOAT:
+                // var index (int)
+                var_address = this->readIntValueByIterator();
+                this->stack.push(this->vars[var_address].getFloatValue());
+                #if DEBUG
+                    this->runtime_log_file << "LOAD_FLOAT: " << var_address << std::endl;
+                    this->logStackAndMap();
+                #endif
+                break;
             case OpCode::LOAD_STRING:
                 // var index (int)
                 var_address = this->readIntValueByIterator();
@@ -95,6 +110,15 @@ void RunTime::run(void) {
                 this->vars[var_address] = this->stack.pop();
                 #if DEBUG
                     this->runtime_log_file << "STORE_INT: " << var_address << std::endl;
+                    this->logStackAndMap();
+                #endif
+                break;
+            case OpCode::STORE_FLOAT:
+                // var index (int)
+                var_address = this->readIntValueByIterator();
+                this->vars[var_address] = this->stack.pop();
+                #if DEBUG
+                    this->runtime_log_file << "STORE_FLOAT: " << var_address << std::endl;
                     this->logStackAndMap();
                 #endif
                 break;
@@ -125,6 +149,13 @@ void RunTime::run(void) {
                     #endif
                     this->stack.push(var2.getStringValue() + var1.getStringValue());
                 }
+                // float32 + float32
+                else if (var2.getType() == 3) {
+                    #if DEBUG
+                        this->runtime_log_file << "float32 + float32" << std::endl;
+                    #endif
+                    this->stack.push(var2.getFloatValue() + var1.getFloatValue());
+                }
                 #if DEBUG
                     this->runtime_log_file << "ADD: " << this->stack.top().getIntValue() << std::endl;
                     this->logStackAndMap();
@@ -133,7 +164,14 @@ void RunTime::run(void) {
             case OpCode::SUB:
                 var1 = this->stack.pop();
                 var2 = this->stack.pop();
-                this->stack.push(var2.getIntValue() - var1.getIntValue());
+                // int32 - int32
+                if (var2.getType() == 1) {
+                    this->stack.push(var2.getIntValue() - var1.getIntValue());
+                }
+                // float32 - float32
+                else if (var2.getType() == 3) {
+                    this->stack.push(var2.getFloatValue() - var1.getFloatValue());
+                }
                 #if DEBUG
                     this->runtime_log_file << "SUB: " << this->stack.top().getIntValue() << std::endl;
                     this->logStackAndMap();
@@ -142,7 +180,14 @@ void RunTime::run(void) {
             case OpCode::MUL:
                 var1 = this->stack.pop();
                 var2 = this->stack.pop();
-                this->stack.push(var2.getIntValue() * var1.getIntValue());
+                // int32 * int32
+                if (var2.getType() == 1) {
+                    this->stack.push(var2.getIntValue() * var1.getIntValue());
+                }
+                // float32 * float32
+                else if (var2.getType() == 3) {
+                    this->stack.push(var2.getFloatValue() * var1.getFloatValue());
+                }
                 #if DEBUG
                     this->runtime_log_file << "MUL: " << this->stack.top().getIntValue() << std::endl;
                     this->logStackAndMap();
@@ -151,7 +196,14 @@ void RunTime::run(void) {
             case OpCode::DIV:
                 var1 = this->stack.pop();
                 var2 = this->stack.pop();
-                this->stack.push(var2.getIntValue() / var1.getIntValue());
+                // int32 / int32
+                if (var2.getType() == 1) {
+                    this->stack.push(var2.getIntValue() / var1.getIntValue());
+                }
+                // float32 / float32
+                else if (var2.getType() == 3) {
+                    this->stack.push(var2.getFloatValue() / var1.getFloatValue());
+                }
                 #if DEBUG
                     this->runtime_log_file << "DIV: " << this->stack.top().getIntValue() << std::endl;
                     this->logStackAndMap();
@@ -160,7 +212,9 @@ void RunTime::run(void) {
             case OpCode::MOD:
                 var1 = this->stack.pop();
                 var2 = this->stack.pop();
-                this->stack.push(var2.getIntValue() % var1.getIntValue());
+                if (var2.getType() == 1) {
+                    this->stack.push(var2.getIntValue() % var1.getIntValue());
+                }
                 #if DEBUG
                     this->runtime_log_file << "MOD: " << this->stack.top().getIntValue() << std::endl;
                     this->logStackAndMap();
@@ -211,7 +265,7 @@ void RunTime::run(void) {
             case OpCode::CMP_EQUAL:
                 var1 = this->stack.pop();
                 var2 = this->stack.pop();
-                // int32 + int32
+                // int32 == int32
                 if (var2.getType() == 1) {
                     #if DEBUG
                         this->runtime_log_file << "int32 + int32" << std::endl;
@@ -223,12 +277,24 @@ void RunTime::run(void) {
                         this->stack.push(0);
                     }
                 }
-                // string + string
+                // string == string
                 else if (var2.getType() == 2) {
                     #if DEBUG
                         this->runtime_log_file << "string + string" << std::endl;
                     #endif
                     if (var2.getStringValue() == var1.getStringValue()) {
+                        this->stack.push(1);
+                    }
+                    else {
+                        this->stack.push(0);
+                    }
+                }
+                // float32 == float32
+                else if (var2.getType() == 3) {
+                    #if DEBUG
+                        this->runtime_log_file << "float32 + float32" << std::endl;
+                    #endif
+                    if (var2.getFloatValue() == var1.getFloatValue()) {
                         this->stack.push(1);
                     }
                     else {
@@ -243,7 +309,7 @@ void RunTime::run(void) {
             case OpCode::CMP_NOT_EQUAL:
                 var1 = this->stack.pop();
                 var2 = this->stack.pop();
-                // int32 + int32
+                // int32 != int32
                 if (var2.getType() == 1) {
                     #if DEBUG
                         this->runtime_log_file << "int32 + int32" << std::endl;
@@ -255,12 +321,24 @@ void RunTime::run(void) {
                         this->stack.push(1);
                     }
                 }
-                // string + string
+                // string != string
                 else if (var2.getType() == 2) {
                     #if DEBUG
                         this->runtime_log_file << "string + string" << std::endl;
                     #endif
                     if (var2.getStringValue() == var1.getStringValue()) {
+                        this->stack.push(0);
+                    }
+                    else {
+                        this->stack.push(1);
+                    }
+                }
+                // float32 != float32
+                else if (var2.getType() == 3) {
+                    #if DEBUG
+                        this->runtime_log_file << "float32 + float32" << std::endl;
+                    #endif
+                    if (var2.getFloatValue() == var1.getFloatValue()) {
                         this->stack.push(0);
                     }
                     else {
@@ -275,11 +353,23 @@ void RunTime::run(void) {
             case OpCode::CMP_LESS:
                 var1 = this->stack.pop();
                 var2 = this->stack.pop();
-                if (var2.getIntValue() < var1.getIntValue()) {
+                // int32 < int32
+                if (var2.getType() == 1) {
+                    if (var2.getIntValue() < var1.getIntValue()) {
                     this->stack.push(1);
                 }
                 else {
                     this->stack.push(0);
+                }
+                }
+                // float32 < float32
+                else if (var2.getType() == 3) {
+                    if (var2.getFloatValue() < var1.getFloatValue()) {
+                    this->stack.push(1);
+                }
+                else {
+                    this->stack.push(0);
+                }
                 }
                 #if DEBUG
                     this->runtime_log_file << "CMP_LESS: " << var2.__str() << " < " << var1.__str() << std::endl;
@@ -289,11 +379,23 @@ void RunTime::run(void) {
             case OpCode::CMP_LESS_EQUAL:
                 var1 = this->stack.pop();
                 var2 = this->stack.pop();
-                if (var2.getIntValue() <= var1.getIntValue()) {
-                    this->stack.push(1);
+                // int32 <= int32
+                if (var2.getType() == 1) {
+                    if (var2.getIntValue() <= var1.getIntValue()) {
+                        this->stack.push(1);
+                    }
+                    else {
+                        this->stack.push(0);
+                    }
                 }
-                else {
-                    this->stack.push(0);
+                // float32 <= float32
+                else if (var2.getType() == 3) {
+                    if (var2.getFloatValue() <= var1.getFloatValue()) {
+                        this->stack.push(1);
+                    }
+                    else {
+                        this->stack.push(0);
+                    }
                 }
                 #if DEBUG
                     this->runtime_log_file << "CMP_LESS_EQUAL: " << var2.__str() << " <= " << var1.__str() << std::endl;
@@ -303,11 +405,23 @@ void RunTime::run(void) {
             case OpCode::CMP_GREATER:
                 var1 = this->stack.pop();
                 var2 = this->stack.pop();
-                if (var2.getIntValue() > var1.getIntValue()) {
-                    this->stack.push(1);
+                // int32 > int32
+                if (var2.getType() == 1) {
+                    if (var2.getIntValue() > var1.getIntValue()) {
+                        this->stack.push(1);
+                    }
+                    else {
+                        this->stack.push(0);
+                    }
                 }
-                else {
-                    this->stack.push(0);
+                // float32 > float32
+                else if (var2.getType() == 3) {
+                    if (var2.getFloatValue() > var1.getFloatValue()) {
+                        this->stack.push(1);
+                    }
+                    else {
+                        this->stack.push(0);
+                    }
                 }
                 #if DEBUG
                     this->runtime_log_file << "CMP_GREATER: " << var2.__str() << " > " << var1.__str() << std::endl;
@@ -317,11 +431,23 @@ void RunTime::run(void) {
             case OpCode::CMP_GREATER_EQUAL:
                 var1 = this->stack.pop();
                 var2 = this->stack.pop();
-                if (var2.getIntValue() >= var1.getIntValue()) {
-                    this->stack.push(1);
+                // int32 >= int32
+                if (var2.getType() == 1) {
+                    if (var2.getIntValue() >= var1.getIntValue()) {
+                        this->stack.push(1);
+                    }
+                    else {
+                        this->stack.push(0);
+                    }
                 }
-                else {
-                    this->stack.push(0);
+                // float32 >= float32
+                else if (var2.getType() == 3) {
+                    if (var2.getFloatValue() >= var1.getFloatValue()) {
+                        this->stack.push(1);
+                    }
+                    else {
+                        this->stack.push(0);
+                    }
                 }
                 #if DEBUG
                     this->runtime_log_file << "CMP_GREATER_EQUAL: " << var2.__str() << " >= " << var1.__str() << std::endl;
@@ -398,6 +524,8 @@ void RunTime::run(void) {
                     this->logStackAndMap();
                 #endif
                 break;
+            default:
+                return;
         }
     }
 
@@ -415,6 +543,14 @@ int RunTime::readIntValueByIterator(void) {
     }
 
     return int_value;
+}
+
+float RunTime::readFloatValueByIterator(void) {
+    float float_value;
+    std::memcpy(&float_value, &this->runtime[this->runtime_iterator], FLOAT32_SIZE);
+    this->runtime_iterator += FLOAT32_SIZE;
+
+    return float_value;
 }
 
 std::string RunTime::readStringValueByIterator(int size) {

@@ -17,6 +17,7 @@
 #include <sstream>
 #include <iomanip>
 #include <map>
+#include <cstring>
 
 class CodeGenerator {
     public:
@@ -39,6 +40,7 @@ class CodeGenerator {
         void printInstructions(std::vector<SyntaxTreeNode*> nodes, int whileDepth);
         void storeValue(SyntaxTreeNode* node);
         void writeIntData(int value);
+        void writeFloatData(float value);
         void writeOperator(TokenDetail td);
         void writeAddress(int value, int writeAddress);
         void logOpCodes(void);

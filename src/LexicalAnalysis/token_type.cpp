@@ -50,6 +50,9 @@ std::string TokenType::__str(void) {
         case TokenDetail::DEF_INT32:
             str += "DEF_INT32";
             break;
+        case TokenDetail::DEF_FLOAT32:
+            str += "DEF_FLOAT32";
+            break;
         case TokenDetail::DEF_STRING:
             str += "DEF_STRING";
             break;

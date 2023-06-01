@@ -5,10 +5,13 @@
 
 enum class OpCode : uint8_t {
     PUSH_INT,
+    PUSH_FLOAT,
     PUSH_STRING,
     LOAD_INT,
+    LOAD_FLOAT,
     LOAD_STRING,
     STORE_INT,
+    STORE_FLOAT,
     STORE_STRING,
     ADD,
     SUB,

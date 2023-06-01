@@ -65,6 +65,7 @@ std::vector<SyntaxTreeNode*> Parser::parseStatement(void) {
                     nodes.push_back(parseReturnStatement());
                     break;
                 case TokenDetail::DEF_INT32:
+                case TokenDetail::DEF_FLOAT32:
                 case TokenDetail::DEF_STRING:
                     return this->parseVariableDefinition();
                     break;
@@ -199,7 +200,16 @@ SyntaxTreeNode* Parser::parseFactor(void) {
 
     // INT LITERAL
     if (tk == TokenKind::TK_NUM) {
-        node = new SyntaxTreeNode(token, ASTNodeType::INT_LITERAL);
+        switch (td) {
+            case TokenDetail::DEF_INT32:
+                node = new SyntaxTreeNode(token, ASTNodeType::INT_LITERAL);
+                break;
+            case TokenDetail::DEF_FLOAT32:
+                node = new SyntaxTreeNode(token, ASTNodeType::FLOAT_LITERAL);
+                break;
+            default:
+                this->runError(this->tokens[this->index]);
+        }
         this->index++;
     }
     // STRING LITERAL
@@ -405,6 +415,7 @@ std::vector<SyntaxTreeNode*> Parser::parseVariableDefinition(void) {
     // string (DEF_STRING)
     switch (this->tokens[this->index]->getTokenType()->getTokenDetail()) {
         case TokenDetail::DEF_INT32:
+        case TokenDetail::DEF_FLOAT32:
         case TokenDetail::DEF_STRING:
             varTypeToken = this->tokens[this->index];
             this->index++;

@@ -99,6 +99,9 @@ std::string SyntaxTreeNode::__str(void) {
         case ASTNodeType::INT_LITERAL:
             return "INT_LITERAL";
             break;
+        case ASTNodeType::FLOAT_LITERAL:
+            return "FLOAT_LITERAL";
+            break;
         case ASTNodeType::STRING_LITERAL:
             return "STRING_LITERAL";
             break;

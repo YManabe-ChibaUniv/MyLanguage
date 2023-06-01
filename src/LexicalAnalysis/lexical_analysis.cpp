@@ -31,6 +31,7 @@ std::vector<Token*> LexicalAnalysis::run(void) {
     std::vector<Token*> tokens;
     Token* token = NULL;
     char c = this->nextChar();
+    bool isFloatNumber;
 
     // analyze
     while(c != EOF) {
@@ -76,13 +77,27 @@ std::vector<Token*> LexicalAnalysis::run(void) {
 
         // Check for numeric literals
         else if (std::isdigit(c)) {
+            isFloatNumber = false;
             std::string number;
-            while (std::isdigit(c)) {
+            while (std::isdigit(c) || c == '.') {
+                if (c == '.') {
+                    if (!isFloatNumber) {
+                        isFloatNumber = true;
+                    }
+                    else {
+                        this->runError("Invalid float number");
+                    }
+                }
                 number += c;
                 c = this->nextChar();
             }
             this->unget();
-            token->setTokenType(new TokenType(TokenKind::TK_NUM, TokenDetail::NOTHING));
+            if (isFloatNumber) {
+                token->setTokenType(new TokenType(TokenKind::TK_NUM, TokenDetail::DEF_FLOAT32));
+            }
+            else {
+                token->setTokenType(new TokenType(TokenKind::TK_NUM, TokenDetail::DEF_INT32));
+            }
             token->setValue(number);
         }
 
@@ -109,14 +124,28 @@ std::vector<Token*> LexicalAnalysis::run(void) {
                 c = this->nextChar();
                 if (std::isdigit(c)) {
                     std::string number;
+                    isFloatNumber = false;
                     number += '-';
                     isOperatorOrPunctuation = false;
-                    while (std::isdigit(c)) {
+                    while (std::isdigit(c) || c == '.') {
+                        if (c == '.') {
+                            if (!isFloatNumber) {
+                                isFloatNumber = true;
+                            }
+                            else {
+                                this->runError("Invalid float number");
+                            }
+                        }
                         number += c;
                         c = this->nextChar();
                     }
                     this->unget();
-                    token->setTokenType(new TokenType(TokenKind::TK_NUM, TokenDetail::NOTHING));
+                    if (isFloatNumber) {
+                        token->setTokenType(new TokenType(TokenKind::TK_NUM, TokenDetail::DEF_FLOAT32));
+                    }
+                    else {
+                        token->setTokenType(new TokenType(TokenKind::TK_NUM, TokenDetail::DEF_INT32));
+                    }
                     token->setValue(number);
                 }
                 else {
