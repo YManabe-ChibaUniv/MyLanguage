@@ -12,6 +12,7 @@ class VarStack {
         VarStack(void);
         ~VarStack();
         void push(int value);
+        void push(float value);
         void push(std::string value);
         Var pop(void);
         Var top(void);

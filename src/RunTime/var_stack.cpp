@@ -13,6 +13,11 @@ void VarStack::push(int value) {
     this->stack[this->stack_pointer].setIntValue(value);
 }
 
+void VarStack::push(float value) {
+    this->stack_pointer++;
+    this->stack[this->stack_pointer].setFloatValue(value);
+}
+
 void VarStack::push(std::string value) {
     this->stack_pointer++;
     this->stack[this->stack_pointer].setStringValue(value);

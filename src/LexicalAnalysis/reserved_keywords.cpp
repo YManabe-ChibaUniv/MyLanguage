@@ -36,6 +36,7 @@ std::map<TokenDetail, std::string> ReservedKeywords::getOperators(void) {
 void ReservedKeywords::setTokenKeywords(void) {
     this->keywords.emplace(TokenDetail::DEF_FUNCTION, "function");
     this->keywords.emplace(TokenDetail::DEF_INT32, "int32");
+    this->keywords.emplace(TokenDetail::DEF_FLOAT32, "float32");
     this->keywords.emplace(TokenDetail::DEF_STRING, "string");
     this->keywords.emplace(TokenDetail::DEF_VOID, "void");
     this->keywords.emplace(TokenDetail::DEF_RETURN, "return");

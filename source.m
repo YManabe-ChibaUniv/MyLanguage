@@ -1,11 +1,11 @@
 function main(void) -> void {
-    int32 i, j;
-    i = -100;
-    j = 100;
+    float32 i, j;
+    i = -100.0;
+    j = 100.0;
     while (i < j) {
-        if (/* comment */i / 10 > 0 AND i MOD 10 == 0) {
+        if (/* comment */i / 10.0 > 0.0 AND TRUE) {
             println(i);
         }
-        i = i + 1;
+        i = i + 1.0;
     }
 }

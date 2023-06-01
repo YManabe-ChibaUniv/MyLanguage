@@ -1,5 +1,5 @@
 /*
-	main function
+	Calculate prime numbers between 1 and 10000.
 */
 function main(void) -> void {
 	int32 i, j, flag;

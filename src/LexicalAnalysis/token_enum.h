@@ -20,6 +20,7 @@ enum class TokenDetail : int {
     // keywords
     DEF_FUNCTION,           // function
     DEF_INT32,              // int32
+    DEF_FLOAT32,            // float32
     DEF_STRING,             // string
     DEF_VOID,               // void
     DEF_RETURN,             // return

@@ -15,6 +15,12 @@
 #include <stdint.h>
 #include <stack>
 #include <map>
+#include <cstring>
+
+#define INT32_SIZE 4
+#define FLOAT32_SIZE 4
+#define STR_SIZE 4
+#define LONG_SIZE 8
 
 class RunTime {
     public:
@@ -35,6 +41,7 @@ class RunTime {
         std::map<int, Var> vars;
         CallStack call_stack;
         int readIntValueByIterator(void);
+        float readFloatValueByIterator(void);
         std::string readStringValueByIterator(int size);
         void logStackAndMap(void);
 };
